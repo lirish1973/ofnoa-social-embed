@@ -199,7 +199,7 @@ class OSE_Updater {
 			'tested'         => get_bloginfo( 'version' ),
 			'last_updated'   => $release['published'],
 			'sections'       => array(
-				'description' => esc_html__( 'Embed Instagram and Facebook videos in fully designed grids, tabs, carousels and stories bars.', 'ofnoa-social-embed' ),
+				'description' => esc_html__( 'Embed Instagram, TikTok and Facebook videos in fully designed grids, tabs, carousels and stories bars.', 'ofnoa-social-embed' ),
 				'changelog'   => wpautop( $notes ),
 			),
 		);

@@ -127,10 +127,10 @@ class OSE_Metabox {
 		?>
 		<div class="ose-meta-wrap">
 			<p class="ose-field">
-				<label for="ose_url"><strong><?php esc_html_e( 'Instagram or Facebook video URL', 'ofnoa-social-embed' ); ?></strong></label>
+				<label for="ose_url"><strong><?php esc_html_e( 'Instagram, TikTok or Facebook video URL', 'ofnoa-social-embed' ); ?></strong></label>
 				<input type="url" class="widefat code" id="ose_url" name="_ose_url" value="<?php echo esc_attr( $url ); ?>" placeholder="https://www.instagram.com/reel/XXXXXXXXXXX/" />
 				<span class="description">
-					<?php esc_html_e( 'Reels, posts, IGTV, Facebook videos, Facebook Reels, watch links and fb.watch short links are all accepted.', 'ofnoa-social-embed' ); ?>
+					<?php esc_html_e( 'Reels, posts, IGTV, TikTok videos and photo posts, Facebook videos and Reels, watch links, fb.watch and vm.tiktok.com short links are all accepted.', 'ofnoa-social-embed' ); ?>
 				</span>
 			</p>
 
@@ -346,7 +346,7 @@ class OSE_Metabox {
 		}
 		$result = self::sync_from_url( $post_id, true );
 		if ( empty( $result['ok'] ) ) {
-			wp_send_json_error( array( 'message' => __( 'That URL was not recognised as an Instagram or Facebook video.', 'ofnoa-social-embed' ) ) );
+			wp_send_json_error( array( 'message' => __( 'That URL was not recognised as an Instagram, TikTok or Facebook video.', 'ofnoa-social-embed' ) ) );
 		}
 		wp_send_json_success( $result );
 	}
@@ -398,11 +398,11 @@ class OSE_Metabox {
 					?>
 				</p></div>
 			<?php endif; ?>
-			<p><?php esc_html_e( 'Paste one Instagram or Facebook URL per line. Each becomes a video in the library; posters are resolved automatically.', 'ofnoa-social-embed' ); ?></p>
+			<p><?php esc_html_e( 'Paste one Instagram, TikTok or Facebook URL per line. Each becomes a video in the library; posters are resolved automatically.', 'ofnoa-social-embed' ); ?></p>
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 				<?php wp_nonce_field( 'ose_bulk_import' ); ?>
 				<input type="hidden" name="action" value="ose_bulk_import" />
-				<textarea name="ose_urls" rows="12" class="large-text code" placeholder="https://www.instagram.com/reel/XXXXXXXXXXX/&#10;https://www.facebook.com/watch/?v=123456789"></textarea>
+				<textarea name="ose_urls" rows="12" class="large-text code" placeholder="https://www.instagram.com/reel/XXXXXXXXXXX/&#10;https://www.tiktok.com/@user/video/1234567890123456789&#10;https://www.facebook.com/watch/?v=123456789"></textarea>
 				<p>
 					<label for="ose_import_collection"><?php esc_html_e( 'Add to collection', 'ofnoa-social-embed' ); ?></label>
 					<select name="ose_collection" id="ose_import_collection">

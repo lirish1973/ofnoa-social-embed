@@ -652,6 +652,11 @@
 	background: #1877f2;
 }
 
+.ose__badge--tiktok {
+	background: #000;
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+}
+
 .ose--badge-tl .ose__badge {
 	top: 10px;
 	inset-inline-start: 10px;

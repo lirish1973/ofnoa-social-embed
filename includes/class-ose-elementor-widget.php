@@ -58,7 +58,7 @@ class OSE_Elementor_Widget extends \Elementor\Widget_Base {
 	 * @return array
 	 */
 	public function get_keywords() {
-		return array( 'instagram', 'facebook', 'reels', 'video', 'gallery', 'embed', 'social' );
+		return array( 'instagram', 'tiktok', 'facebook', 'reels', 'video', 'gallery', 'embed', 'social' );
 	}
 
 	/**

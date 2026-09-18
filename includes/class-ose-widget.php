@@ -41,7 +41,7 @@ class OSE_Gallery_Widget extends WP_Widget {
 			'ose_gallery_widget',
 			__( 'Social Video Gallery', 'ofnoa-social-embed' ),
 			array(
-				'description'                 => __( 'Instagram & Facebook videos in a designed grid, carousel, tabs or stories bar.', 'ofnoa-social-embed' ),
+				'description'                 => __( 'Instagram, TikTok & Facebook videos in a designed grid, carousel, tabs or stories bar.', 'ofnoa-social-embed' ),
 				'classname'                   => 'ose-widget',
 				'customize_selective_refresh' => true,
 			)

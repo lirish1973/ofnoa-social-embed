@@ -238,10 +238,10 @@
 	registerBlockType( 'ofnoa/social-embed', {
 		apiVersion: 2,
 		title: __( 'Social Video Gallery', 'ofnoa-social-embed' ),
-		description: __( 'Instagram & Facebook videos in a designed grid, tabs, carousel or stories bar.', 'ofnoa-social-embed' ),
+		description: __( 'Instagram, TikTok & Facebook videos in a designed grid, tabs, carousel or stories bar.', 'ofnoa-social-embed' ),
 		category: 'ofnoa',
 		icon: 'format-video',
-		keywords: [ 'instagram', 'facebook', 'reels', 'video', 'gallery' ],
+		keywords: [ 'instagram', 'tiktok', 'facebook', 'reels', 'video', 'gallery' ],
 		supports: { align: [ 'wide', 'full' ], anchor: true, html: false },
 		attributes: buildAttributes(),
 
@@ -274,7 +274,7 @@
 				? el( Placeholder, {
 					icon: 'format-video',
 					label: __( 'Social Video Gallery', 'ofnoa-social-embed' ),
-					instructions: __( 'Paste one Instagram or Facebook URL per line in the Content panel, or switch the source back to your video library.', 'ofnoa-social-embed' )
+					instructions: __( 'Paste one Instagram, TikTok or Facebook URL per line in the Content panel, or switch the source back to your video library.', 'ofnoa-social-embed' )
 				} )
 				: el( ServerSideRender, {
 					block: 'ofnoa/social-embed',

@@ -79,7 +79,7 @@ class OSE_REST {
 		if ( ! $parsed ) {
 			return new WP_Error(
 				'ose_unrecognised',
-				__( 'That link is not an Instagram or Facebook video.', 'ofnoa-social-embed' ),
+				__( 'That link is not an Instagram, TikTok or Facebook video.', 'ofnoa-social-embed' ),
 				array( 'status' => 400 )
 			);
 		}

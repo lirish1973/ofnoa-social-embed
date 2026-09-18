@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       Ofnoa Social Embed
  * Plugin URI:        https://github.com/lirish1973/ofnoa-social-embed
- * Description:       Embed Instagram & Facebook videos (Reels, posts, IGTV, FB videos) in stunning, fully customizable grids, tabs, carousels and spotlight layouts. Gutenberg block, classic widget, shortcode and Elementor widget included.
- * Version:           1.0.0
+ * Description:       Embed Instagram, TikTok & Facebook videos (Reels, posts, IGTV, TikToks, FB videos) in stunning, fully customizable grids, tabs, carousels and spotlight layouts. Gutenberg block, classic widget, shortcode and Elementor widget included.
+ * Version:           1.1.0
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            Ofnoacomps
@@ -19,7 +19,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'OSE_VERSION', '1.0.0' );
+define( 'OSE_VERSION', '1.1.0' );
 define( 'OSE_FILE', __FILE__ );
 define( 'OSE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'OSE_URL', plugin_dir_url( __FILE__ ) );

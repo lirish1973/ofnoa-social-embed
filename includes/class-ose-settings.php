@@ -320,10 +320,10 @@ class OSE_Settings {
 							<td>
 								<label>
 									<input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[consent_mode]" value="1" <?php checked( $s['consent_mode'], 1 ); ?> />
-									<?php esc_html_e( 'GDPR mode: no Instagram or Facebook iframe loads until the visitor clicks play', 'ofnoa-social-embed' ); ?>
+									<?php esc_html_e( 'GDPR mode: no Instagram, TikTok or Facebook iframe loads until the visitor clicks play', 'ofnoa-social-embed' ); ?>
 								</label>
 								<p class="description"><?php esc_html_e( 'The gallery itself always renders from your own server; only the player iframe is deferred.', 'ofnoa-social-embed' ); ?></p>
-								<input type="text" class="large-text" name="<?php echo esc_attr( self::OPTION ); ?>[consent_text]" value="<?php echo esc_attr( $s['consent_text'] ); ?>" placeholder="<?php esc_attr_e( 'Playing this video loads content from Instagram / Facebook.', 'ofnoa-social-embed' ); ?>" />
+								<input type="text" class="large-text" name="<?php echo esc_attr( self::OPTION ); ?>[consent_text]" value="<?php echo esc_attr( $s['consent_text'] ); ?>" placeholder="<?php esc_attr_e( 'Playing this video loads content from Instagram / TikTok / Facebook.', 'ofnoa-social-embed' ); ?>" />
 							</td>
 						</tr>
 						<tr>
@@ -337,7 +337,7 @@ class OSE_Settings {
 
 				<?php elseif ( 'api' === $tab ) : ?>
 					<p class="description" style="max-width:760px">
-						<?php esc_html_e( 'Credentials are entirely optional. Playback always works through the public Instagram and Facebook embed players. Supplying a Meta app only improves automatic poster and caption resolution.', 'ofnoa-social-embed' ); ?>
+						<?php esc_html_e( 'Credentials are entirely optional. Playback always works through the public Instagram, TikTok and Facebook embed players, and TikTok posters resolve through its open oEmbed endpoint. Supplying a Meta app only improves poster and caption resolution for Instagram and Facebook.', 'ofnoa-social-embed' ); ?>
 					</p>
 					<table class="form-table" role="presentation">
 						<tr>

@@ -1,6 +1,6 @@
 # Ofnoa Social Embed
 
-Embed Instagram and Facebook videos in WordPress — grids, tabs, carousels, spotlights and stories bars that look designed rather than bolted on.
+Embed Instagram, TikTok and Facebook videos in WordPress — grids, tabs, carousels, spotlights and stories bars that look designed rather than bolted on.
 
 Works as a **Gutenberg block**, a **classic widget**, an **Elementor widget** and a **shortcode**. No API keys required.
 
@@ -10,7 +10,7 @@ Works as a **Gutenberg block**, a **classic widget**, an **Elementor widget** an
 
 ## What it does
 
-Paste Instagram and Facebook links into a small library, group them into collections, and drop a gallery anywhere. Playback happens in a lightbox, inline in the card, or on the original network — your choice, per gallery.
+Paste Instagram, TikTok and Facebook links into a small library, group them into collections, and drop a gallery anywhere. Playback happens in a lightbox, inline in the card, or on the original network — your choice, per gallery.
 
 ### Layouts
 
@@ -69,11 +69,20 @@ Once active, the plugin checks this repository for new releases and offers them 
 https://www.instagram.com/reel/XXXXXXXXXXX/
 https://www.instagram.com/p/XXXXXXXXXXX/
 https://www.instagram.com/tv/XXXXXXXXXXX/
+
+https://www.tiktok.com/@username/video/1234567890123456789
+https://www.tiktok.com/@username/photo/1234567890123456789
+https://vm.tiktok.com/XXXXXXXX/
+https://vt.tiktok.com/XXXXXXXX/
+https://www.tiktok.com/t/XXXXXXXX/
+
 https://www.facebook.com/watch/?v=123456789
 https://www.facebook.com/reel/123456789
 https://www.facebook.com/PageName/videos/123456789/
 https://fb.watch/XXXXXXXX/
 ```
+
+Short links (`vm.tiktok.com`, `vt.tiktok.com`, `fb.watch`, Instagram `/share/`) are followed to the canonical video automatically and the result is cached.
 
 **Social Embed → Bulk import** takes a whole list at once and can drop them all into a collection.
 
@@ -91,7 +100,7 @@ https://fb.watch/XXXXXXXX/
 
 [ofnoa_social_embed layout="carousel" collection="reels,promos" autoplay="yes" autoplay_speed="5000"]
 
-[ofnoa_social_embed source="urls" urls="https://www.instagram.com/reel/AAAA/|https://www.facebook.com/watch/?v=123"]
+[ofnoa_social_embed source="urls" urls="https://www.instagram.com/reel/AAAA/|https://www.tiktok.com/@user/video/7234567890123456789|https://www.facebook.com/watch/?v=123"]
 ```
 
 Separate multiple URLs with `|`. A full attribute reference, generated from the live schema, lives under **Settings → How to use**.
@@ -100,20 +109,28 @@ Separate multiple URLs with `|`. A full attribute reference, generated from the 
 
 ## How playback works
 
-No credentials are involved. Instagram plays through `instagram.com/<type>/<id>/embed/` and Facebook through the public `plugins/video.php` player. That is why the plugin keeps working when tokens expire.
+No credentials are involved.
+
+| Network | Player | Poster source |
+| --- | --- | --- |
+| Instagram | `instagram.com/<type>/<id>/embed/` | Open Graph image from the embed page, or Meta oEmbed if you added an app |
+| TikTok | `tiktok.com/player/v1/<id>` | `tiktok.com/oembed` — open, no credentials |
+| Facebook | `facebook.com/plugins/video.php` | Open Graph image, or Meta oEmbed if you added an app |
+
+That is why the plugin keeps working when tokens expire — there are no tokens on the critical path.
 
 Posters are resolved best-effort, in this order:
 
 1. The video's featured image (always wins — set it for full control).
 2. A manually entered poster URL.
-3. An automatic fetch: official oEmbed if you supplied a Meta app, otherwise the public embed page's Open Graph image.
+3. An automatic fetch: TikTok's open oEmbed for TikTok, and for Instagram/Facebook either Meta oEmbed (if you supplied an app) or the public embed page's Open Graph image.
 4. If nothing resolves, the card lazily mounts the real embed so a genuine frame still appears.
 
 Results are cached in transients for a configurable window, and **Settings → General** has a one-click cache flush.
 
 ### Privacy mode
 
-Switch on *Consent before loading players* and no Instagram or Facebook iframe is requested until the visitor presses play. The gallery itself is rendered entirely from your own server.
+Switch on *Consent before loading players* and no Instagram, TikTok or Facebook iframe is requested until the visitor presses play. The gallery itself is rendered entirely from your own server.
 
 ---
 
@@ -161,21 +178,21 @@ Bump `Version:` in `ofnoa-social-embed.php` (and `OSE_VERSION`, and `Stable tag`
 
 ## בעברית
 
-תוסף שמטמיע סרטוני אינסטגרם ופייסבוק בוורדפרס בתצוגה מעוצבת ומודרנית — גריד, כרטיסיות, קרוסלה, מייסונרי, ספוטלייט, שורת רילס וסטוריז.
+תוסף שמטמיע סרטוני אינסטגרם, טיקטוק ופייסבוק בוורדפרס בתצוגה מעוצבת ומודרנית — גריד, כרטיסיות, קרוסלה, מייסונרי, ספוטלייט, שורת רילס וסטוריז.
 
 **איך מתחילים**
 
 1. מתקינים ומפעילים את התוסף.
-2. **Social Embed ← Add video** — מדביקים קישור לריל או לסרטון פייסבוק ושומרים. לרשימה שלמה בבת אחת: **Bulk import**.
+2. **Social Embed ← Add video** — מדביקים קישור לריל, לטיקטוק או לסרטון פייסבוק ושומרים. לרשימה שלמה בבת אחת: **Bulk import**.
 3. מוסיפים גלריה בבלוק *Social Video Gallery*, בווידג'ט, באלמנטור או עם השורטקוד `[ofnoa_social_embed]`.
 
 **מה פתוח לעיצוב** — הכול: מספר עמודות בנפרד לדסקטופ/טאבלט/מובייל, מרווחים, יחס תמונה, פינות, מסגרות, צללים, שכבת אוברליי ועוצמתה, צבעי מותג, ערכת צבעים בהירה/כהה/אוטומטית, גופנים וגדלים, אפקטי hover, אנימציות כניסה, וכל רכיב בכרטיס ניתן לכיבוי או הדלקה.
 
 **תמיכה בעברית ו-RTL** — הפריסה בנויה על תכונות לוגיות, והחצים, כפתור ההפעלה והלייטבוקס מתהפכים נכון באתר בעברית.
 
-**בלי מפתחות API** — ההפעלה עוברת דרך נגני ההטמעה הציבוריים של אינסטגרם ופייסבוק, ולכן שום טוקן לא פג ושובר את הגלריה. פרטי אפליקציית Meta הם אופציונליים לחלוטין ומשמשים רק לשיפור משיכת התמונות הממוזערות.
+**בלי מפתחות API** — ההפעלה עוברת דרך נגני ההטמעה הציבוריים של אינסטגרם, טיקטוק ופייסבוק, ולכן שום טוקן לא פג ושובר את הגלריה. טיקטוק לא דורש כלום בכלל — נקודת ה-oEmbed שלו פתוחה ומשמשת למשיכת התמונה הממוזערת ושם המשתמש. פרטי אפליקציית Meta אופציונליים לחלוטין ומשפרים רק את משיכת התמונות של אינסטגרם ופייסבוק.
 
-**מצב פרטיות** — אפשר להפעיל מצב שבו שום iframe של מטא לא נטען עד שהגולש לוחץ Play.
+**מצב פרטיות** — אפשר להפעיל מצב שבו שום iframe חיצוני (מטא או טיקטוק) לא נטען עד שהגולש לוחץ Play.
 
 **עדכונים** — התוסף בודק את הריפו הציבורי הזה ומציג עדכון במסך התוספים הרגיל של וורדפרס.
 
@@ -187,4 +204,4 @@ Bump `Version:` in `ofnoa-social-embed.php` (and `OSE_VERSION`, and `Stable tag`
 
 GPL-2.0-or-later. See [LICENSE](LICENSE).
 
-Instagram and Facebook are trademarks of Meta Platforms, Inc. This plugin is not affiliated with, endorsed by or sponsored by Meta.
+Instagram and Facebook are trademarks of Meta Platforms, Inc.; TikTok is a trademark of ByteDance Ltd. This plugin is not affiliated with, endorsed by or sponsored by either company.

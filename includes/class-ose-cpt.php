@@ -46,7 +46,7 @@ class OSE_CPT {
 			'new_item'           => __( 'New video', 'ofnoa-social-embed' ),
 			'view_item'          => __( 'View video', 'ofnoa-social-embed' ),
 			'search_items'       => __( 'Search videos', 'ofnoa-social-embed' ),
-			'not_found'          => __( 'No videos yet — paste an Instagram or Facebook link to begin.', 'ofnoa-social-embed' ),
+			'not_found'          => __( 'No videos yet — paste an Instagram, TikTok or Facebook link to begin.', 'ofnoa-social-embed' ),
 			'not_found_in_trash' => __( 'No videos in the trash.', 'ofnoa-social-embed' ),
 			'all_items'          => __( 'All videos', 'ofnoa-social-embed' ),
 		);
@@ -148,6 +148,7 @@ class OSE_CPT {
 				$map      = array(
 					'instagram' => 'Instagram',
 					'facebook'  => 'Facebook',
+					'tiktok'    => 'TikTok',
 				);
 				echo esc_html( isset( $map[ $platform ] ) ? $map[ $platform ] : '—' );
 				break;

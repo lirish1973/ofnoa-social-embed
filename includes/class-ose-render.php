@@ -75,7 +75,7 @@ class OSE_Render {
 			'speed'    => (int) $a['autoplay_speed'],
 			'loop'     => (int) $a['loop'],
 			'consent'  => (int) $settings['consent_mode'],
-			'consentText' => $settings['consent_text'] ? $settings['consent_text'] : __( 'Playing this video loads content from Instagram / Facebook.', 'ofnoa-social-embed' ),
+			'consentText' => $settings['consent_text'] ? $settings['consent_text'] : __( 'Playing this video loads content from Instagram / TikTok / Facebook.', 'ofnoa-social-embed' ),
 			'i18n'     => array(
 				'close' => __( 'Close', 'ofnoa-social-embed' ),
 				'prev'  => __( 'Previous video', 'ofnoa-social-embed' ),

@@ -65,6 +65,44 @@ class OSE_Resolver {
 			);
 		}
 
+		/* ---------------- TikTok ---------------- */
+		if ( 'tiktok.com' === $host || 'vm.tiktok.com' === $host || 'vt.tiktok.com' === $host ) {
+			// Short links and /t/ links redirect to the canonical video URL.
+			if ( 'vm.tiktok.com' === $host || 'vt.tiktok.com' === $host || preg_match( '#/t/[A-Za-z0-9]+#', $url ) ) {
+				$resolved = self::follow_redirect( $url );
+				if ( $resolved && $resolved !== $url ) {
+					$parsed = self::parse( $resolved );
+					if ( $parsed ) {
+						return $parsed;
+					}
+				}
+			}
+			if ( preg_match( '#/@([A-Za-z0-9._-]+)/(video|photo)/(\d+)#', $url, $m ) ) {
+				return array(
+					'platform' => 'tiktok',
+					'type'     => $m[2],
+					'id'       => $m[3],
+					'url'      => 'https://www.tiktok.com/@' . $m[1] . '/' . $m[2] . '/' . $m[3],
+					'author'   => $m[1],
+				);
+			}
+			// m.tiktok.com/v/123.html and bare /video/123 forms.
+			if ( preg_match( '#/(?:v|video)/(\d{8,})#', $url, $m ) ) {
+				return array(
+					'platform' => 'tiktok',
+					'type'     => 'video',
+					'id'       => $m[1],
+					'url'      => 'https://www.tiktok.com/embed/v2/' . $m[1],
+				);
+			}
+			return array(
+				'platform' => 'tiktok',
+				'type'     => 'profile',
+				'id'       => '',
+				'url'      => $url,
+			);
+		}
+
 		/* ---------------- Facebook ---------------- */
 		if ( 'facebook.com' === $host || 'fb.com' === $host || 'fb.watch' === $host || 'fb.gg' === $host ) {
 			if ( 'fb.watch' === $host ) {
@@ -144,14 +182,19 @@ class OSE_Resolver {
 		if ( false !== $cached ) {
 			return $cached;
 		}
-		$response = wp_safe_remote_head(
-			$url,
-			array(
-				'timeout'     => 8,
-				'redirection' => 5,
-				'user-agent'  => self::user_agent(),
-			)
+		$args = array(
+			'timeout'     => 8,
+			'redirection' => 5,
+			'user-agent'  => self::user_agent(),
 		);
+
+		$response = wp_safe_remote_head( $url, $args );
+
+		// Some networks refuse HEAD on share links; a GET still reveals the target.
+		if ( is_wp_error( $response ) || (int) wp_remote_retrieve_response_code( $response ) >= 400 ) {
+			$response = wp_safe_remote_get( $url, $args );
+		}
+
 		if ( is_wp_error( $response ) ) {
 			set_transient( $cache_key, $url, HOUR_IN_SECONDS );
 			return $url;
@@ -185,6 +228,20 @@ class OSE_Resolver {
 				$base .= 'captioned/';
 			}
 			return $base;
+		}
+		if ( 'tiktok' === $parsed['platform'] ) {
+			if ( empty( $parsed['id'] ) ) {
+				return '';
+			}
+			// TikTok's official player; no SDK script and no credentials needed.
+			return add_query_arg(
+				array(
+					'music_info'  => '0',
+					'description' => '0',
+					'rel'         => '0',
+				),
+				'https://www.tiktok.com/player/v1/' . rawurlencode( $parsed['id'] )
+			);
 		}
 		if ( 'facebook' === $parsed['platform'] ) {
 			return add_query_arg(
@@ -255,12 +312,20 @@ class OSE_Resolver {
 		$settings = OSE_Settings::get();
 		$data     = $empty;
 
+		// 0) TikTok publishes an open oEmbed endpoint — no credentials at all.
+		if ( 'tiktok' === $parsed['platform'] ) {
+			$data = self::oembed_tiktok( $parsed );
+			if ( '' === $data['author'] && ! empty( $parsed['author'] ) ) {
+				$data['author'] = $parsed['author'];
+			}
+		}
+
 		// 1) Official oEmbed, when an app token is configured.
 		$token = trim( (string) $settings['fb_app_id'] ) && trim( (string) $settings['fb_app_secret'] )
 			? trim( $settings['fb_app_id'] ) . '|' . trim( $settings['fb_app_secret'] )
 			: trim( (string) $settings['fb_access_token'] );
 
-		if ( $token ) {
+		if ( $token && 'tiktok' !== $parsed['platform'] ) {
 			$data = self::oembed_official( $parsed, $token );
 		}
 
@@ -329,6 +394,50 @@ class OSE_Resolver {
 	}
 
 	/**
+	 * TikTok's open oEmbed endpoint. Returns poster, title and handle.
+	 *
+	 * @param array $parsed Parse result.
+	 * @return array
+	 */
+	private static function oembed_tiktok( $parsed ) {
+		$out = array(
+			'thumbnail' => '',
+			'title'     => '',
+			'author'    => '',
+			'html'      => '',
+		);
+
+		$request = add_query_arg(
+			array( 'url' => rawurlencode( $parsed['url'] ) ),
+			'https://www.tiktok.com/oembed'
+		);
+
+		$response = wp_safe_remote_get(
+			$request,
+			array(
+				'timeout'    => 8,
+				'user-agent' => self::user_agent(),
+			)
+		);
+		if ( is_wp_error( $response ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
+			return $out;
+		}
+
+		$body = json_decode( wp_remote_retrieve_body( $response ), true );
+		if ( ! is_array( $body ) ) {
+			return $out;
+		}
+
+		$out['thumbnail'] = isset( $body['thumbnail_url'] ) ? esc_url_raw( $body['thumbnail_url'] ) : '';
+		$out['title']     = isset( $body['title'] ) ? sanitize_text_field( $body['title'] ) : '';
+		$out['author']    = isset( $body['author_unique_id'] )
+			? sanitize_text_field( $body['author_unique_id'] )
+			: ( isset( $body['author_name'] ) ? sanitize_text_field( $body['author_name'] ) : '' );
+
+		return $out;
+	}
+
+	/**
 	 * Read the public embed page and pull out whatever is there.
 	 *
 	 * @param array $parsed Parse result.
@@ -342,9 +451,11 @@ class OSE_Resolver {
 			'html'      => '',
 		);
 
-		$target = 'instagram' === $parsed['platform']
-			? self::embed_url( $parsed, true )
-			: $parsed['url'];
+		if ( 'instagram' === $parsed['platform'] ) {
+			$target = self::embed_url( $parsed, true );
+		} else {
+			$target = $parsed['url'];
+		}
 
 		if ( '' === $target ) {
 			return $out;

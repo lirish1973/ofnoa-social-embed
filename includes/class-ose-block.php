@@ -98,10 +98,10 @@ class OSE_Block {
 			array(
 				'api_version'     => 2,
 				'title'           => __( 'Social Video Gallery', 'ofnoa-social-embed' ),
-				'description'     => __( 'Instagram & Facebook videos in a designed grid, tabs, carousel or stories bar.', 'ofnoa-social-embed' ),
+				'description'     => __( 'Instagram, TikTok & Facebook videos in a designed grid, tabs, carousel or stories bar.', 'ofnoa-social-embed' ),
 				'category'        => 'ofnoa',
 				'icon'            => 'format-video',
-				'keywords'        => array( 'instagram', 'facebook', 'reels', 'video', 'gallery', 'embed' ),
+				'keywords'        => array( 'instagram', 'tiktok', 'facebook', 'reels', 'video', 'gallery', 'embed' ),
 				'attributes'      => self::attributes(),
 				'supports'        => array(
 					'align'  => array( 'wide', 'full' ),
