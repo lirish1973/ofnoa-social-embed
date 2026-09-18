@@ -1,0 +1,158 @@
+/*! Ofnoa Social Embed — admin styles */
+
+.ose-meta-wrap .ose-field {
+	margin-bottom: 18px;
+}
+
+.ose-meta-wrap label {
+	display: block;
+	margin-bottom: 5px;
+}
+
+.ose-meta-wrap .description {
+	display: block;
+	margin-top: 6px;
+}
+
+.ose-meta-wrap .button {
+	margin-top: 8px;
+	margin-inline-end: 6px;
+}
+
+.ose-detected {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: -8px 0 16px;
+}
+
+.ose-chip {
+	display: inline-flex;
+	align-items: center;
+	padding: 3px 12px;
+	border-radius: 999px;
+	font-size: 12px;
+	font-weight: 700;
+	color: #fff;
+}
+
+.ose-chip--instagram {
+	background: linear-gradient(135deg, #f9ce34, #ee2a7b 55%, #6228d7);
+}
+
+.ose-chip--facebook {
+	background: #1877f2;
+}
+
+.ose-meta-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+	gap: 0 20px;
+}
+
+.ose-meta-grid label {
+	display: block;
+	margin-bottom: 4px;
+	font-weight: 600;
+}
+
+.ose-side-preview {
+	border-radius: 10px;
+	overflow: hidden;
+	background: #f0f0f1;
+}
+
+.ose-side-preview img {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+.ose-side-preview__empty {
+	display: grid;
+	place-items: center;
+	min-height: 160px;
+	color: #787c82;
+	font-size: 13px;
+	text-align: center;
+	padding: 12px;
+}
+
+.ose-settings .form-table th {
+	width: 260px;
+}
+
+.ose-settings h2 {
+	margin-top: 32px;
+	padding-top: 14px;
+	border-top: 1px solid #dcdcde;
+}
+
+.ose-help table {
+	margin-top: 12px;
+	max-width: 1100px;
+}
+
+.ose-help code {
+	font-size: 12px;
+}
+
+.ose-import textarea {
+	font-family: Consolas, Monaco, monospace;
+	font-size: 13px;
+}
+
+/* Widget form */
+.ose-widget-form .ose-widget-group {
+	margin: 10px 0;
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	background: #fff;
+}
+
+.ose-widget-form .ose-widget-group > summary {
+	padding: 9px 12px;
+	font-weight: 600;
+	cursor: pointer;
+	list-style: none;
+}
+
+.ose-widget-form .ose-widget-group > summary::-webkit-details-marker {
+	display: none;
+}
+
+.ose-widget-form .ose-widget-group > summary::before {
+	content: "\25B8";
+	display: inline-block;
+	margin-inline-end: 7px;
+	transition: transform 160ms ease;
+}
+
+.ose-widget-form .ose-widget-group[open] > summary::before {
+	transform: rotate(90deg);
+}
+
+.ose-widget-form .ose-widget-group > div {
+	padding: 4px 12px 12px;
+}
+
+.ose-widget-form p {
+	margin: 0 0 10px;
+}
+
+.ose-widget-form label {
+	display: block;
+	margin-bottom: 3px;
+	font-size: 12px;
+	font-weight: 600;
+}
+
+/* Block editor panel tweaks */
+.ose-block-note {
+	margin: 0 0 12px;
+	padding: 10px 12px;
+	border-radius: 6px;
+	background: #f0f6fc;
+	font-size: 12px;
+	line-height: 1.5;
+}

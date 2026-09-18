@@ -1,0 +1,1284 @@
+/*!
+ * Ofnoa Social Embed — front-end styles
+ * Every visual decision is driven by a CSS custom property so the block,
+ * widget, shortcode and Elementor controls can all reach it.
+ */
+
+/* ============================================================
+   1. Tokens
+   ============================================================ */
+
+.ose {
+	/* Layout */
+	--ose-cols: 4;
+	--ose-cols-t: 3;
+	--ose-cols-m: 2;
+	--ose-gap: 18px;
+	--ose-ratio: 9 / 16;
+	--ose-maxw: none;
+	--ose-align: start;
+
+	/* Card */
+	--ose-radius: 18px;
+	--ose-bw: 1px;
+	--ose-pad: 14px;
+
+	/* Colour */
+	--ose-accent: #e1306c;
+	--ose-accent2: #8a3ab9;
+	--ose-ov-color: #000;
+	--ose-ov-op: 0.7;
+
+	/* Typography */
+	--ose-title-size: 15px;
+	--ose-title-weight: 700;
+	--ose-meta-size: 12px;
+	--ose-title-lines: 2;
+	--ose-font: inherit;
+
+	/* Motion */
+	--ose-speed: 400ms;
+	--ose-stagger: 60ms;
+	--ose-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+	/* Skin (light by default) */
+	--ose-fg: #14161a;
+	--ose-muted: #6b7280;
+	--ose-surface: #ffffff;
+	--ose-surface-2: #f4f5f7;
+	--ose-border: rgba(15, 23, 42, 0.1);
+	--ose-glass: rgba(255, 255, 255, 0.62);
+	--ose-shadow-color: 15 23 42;
+
+	position: relative;
+	box-sizing: border-box;
+	max-width: var(--ose-maxw);
+	margin-inline: auto;
+	font-family: var(--ose-font);
+	color: var(--ose-fg);
+	background: var(--ose-bg, transparent);
+	container-type: inline-size;
+}
+
+.ose *,
+.ose *::before,
+.ose *::after {
+	box-sizing: border-box;
+}
+
+.ose--skin-dark,
+.ose--skin-auto.ose--forced-dark {
+	--ose-fg: #f5f7fa;
+	--ose-muted: #a2a9b5;
+	--ose-surface: #15171c;
+	--ose-surface-2: #1d2027;
+	--ose-border: rgba(255, 255, 255, 0.13);
+	--ose-glass: rgba(28, 31, 38, 0.6);
+	--ose-shadow-color: 0 0 0;
+}
+
+@media (prefers-color-scheme: dark) {
+	.ose--skin-auto {
+		--ose-fg: #f5f7fa;
+		--ose-muted: #a2a9b5;
+		--ose-surface: #15171c;
+		--ose-surface-2: #1d2027;
+		--ose-border: rgba(255, 255, 255, 0.13);
+		--ose-glass: rgba(28, 31, 38, 0.6);
+		--ose-shadow-color: 0 0 0;
+	}
+}
+
+/* ============================================================
+   2. Header, tabs
+   ============================================================ */
+
+.ose__head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 16px;
+	margin-block-end: clamp(14px, 2vw, 24px);
+}
+
+.ose__heading {
+	margin: 0;
+	font-size: clamp(1.35rem, 1.1rem + 1.1vw, 2.1rem);
+	font-weight: 800;
+	line-height: 1.15;
+	letter-spacing: -0.02em;
+	color: var(--ose-fg);
+}
+
+.ose__subheading {
+	margin: 6px 0 0;
+	font-size: 0.95rem;
+	color: var(--ose-muted);
+}
+
+.ose__follow {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 20px;
+	border-radius: 999px;
+	font-size: 0.875rem;
+	font-weight: 700;
+	text-decoration: none;
+	color: #fff;
+	background: linear-gradient(135deg, var(--ose-accent2), var(--ose-accent));
+	box-shadow: 0 6px 20px -8px var(--ose-accent);
+	transition: transform var(--ose-speed) var(--ose-ease), box-shadow var(--ose-speed) var(--ose-ease);
+}
+
+.ose__follow:hover,
+.ose__follow:focus-visible {
+	color: #fff;
+	transform: translateY(-2px);
+	box-shadow: 0 12px 28px -10px var(--ose-accent);
+}
+
+.ose__tabs {
+	position: relative;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-block-end: clamp(14px, 2vw, 22px);
+	padding-block-end: 2px;
+}
+
+.ose__tab {
+	position: relative;
+	padding: 9px 18px;
+	border: var(--ose-bw) solid var(--ose-border);
+	border-radius: 999px;
+	font: inherit;
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: var(--ose-muted);
+	background: transparent;
+	cursor: pointer;
+	transition: color var(--ose-speed) var(--ose-ease), background var(--ose-speed) var(--ose-ease),
+		border-color var(--ose-speed) var(--ose-ease), transform var(--ose-speed) var(--ose-ease);
+}
+
+.ose__tab:hover {
+	color: var(--ose-fg);
+	transform: translateY(-1px);
+}
+
+.ose__tab.is-active {
+	color: #fff;
+	border-color: transparent;
+	background: linear-gradient(135deg, var(--ose-accent2), var(--ose-accent));
+	box-shadow: 0 6px 18px -8px var(--ose-accent);
+}
+
+.ose__tab-ink {
+	display: none;
+}
+
+/* ============================================================
+   3. Track + layouts
+   ============================================================ */
+
+.ose__viewport {
+	position: relative;
+}
+
+.ose__track {
+	display: grid;
+	grid-template-columns: repeat(var(--ose-cols), minmax(0, 1fr));
+	gap: var(--ose-gap);
+}
+
+@container (max-width: 1024px) {
+	.ose__track {
+		grid-template-columns: repeat(var(--ose-cols-t), minmax(0, 1fr));
+	}
+}
+
+@container (max-width: 640px) {
+	.ose__track {
+		grid-template-columns: repeat(var(--ose-cols-m), minmax(0, 1fr));
+	}
+}
+
+/* Fallback for browsers without container queries. */
+@supports not (container-type: inline-size) {
+	@media (max-width: 1024px) {
+		.ose__track {
+			grid-template-columns: repeat(var(--ose-cols-t), minmax(0, 1fr));
+		}
+	}
+	@media (max-width: 640px) {
+		.ose__track {
+			grid-template-columns: repeat(var(--ose-cols-m), minmax(0, 1fr));
+		}
+	}
+}
+
+/* --- Masonry ------------------------------------------------ */
+.ose--masonry .ose__track {
+	display: block;
+	column-count: var(--ose-cols);
+	column-gap: var(--ose-gap);
+}
+
+.ose--masonry .ose__card {
+	display: inline-block;
+	width: 100%;
+	margin-block-end: var(--ose-gap);
+	break-inside: avoid;
+}
+
+.ose--masonry .ose__media {
+	aspect-ratio: auto;
+}
+
+.ose--masonry .ose__img {
+	position: static;
+	height: auto;
+}
+
+@container (max-width: 1024px) {
+	.ose--masonry .ose__track {
+		column-count: var(--ose-cols-t);
+	}
+}
+
+@container (max-width: 640px) {
+	.ose--masonry .ose__track {
+		column-count: var(--ose-cols-m);
+	}
+}
+
+/* --- Carousel / reels --------------------------------------- */
+.ose--carousel .ose__track,
+.ose--reels .ose__track {
+	display: flex;
+	grid-template-columns: none;
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	scroll-behavior: smooth;
+	scrollbar-width: none;
+	padding-block-end: 4px;
+}
+
+.ose--carousel .ose__track::-webkit-scrollbar,
+.ose--reels .ose__track::-webkit-scrollbar {
+	display: none;
+}
+
+.ose--carousel .ose__card,
+.ose--reels .ose__card {
+	flex: 0 0 calc((100% - (var(--ose-cols) - 1) * var(--ose-gap)) / var(--ose-cols));
+	scroll-snap-align: start;
+}
+
+@container (max-width: 1024px) {
+	.ose--carousel .ose__card,
+	.ose--reels .ose__card {
+		flex-basis: calc((100% - (var(--ose-cols-t) - 1) * var(--ose-gap)) / var(--ose-cols-t));
+	}
+}
+
+@container (max-width: 640px) {
+	.ose--carousel .ose__card,
+	.ose--reels .ose__card {
+		flex-basis: calc((100% - (var(--ose-cols-m) - 1) * var(--ose-gap)) / var(--ose-cols-m));
+	}
+}
+
+.ose--reels .ose__card {
+	scroll-snap-align: center;
+}
+
+.ose__arrow {
+	position: absolute;
+	top: 50%;
+	z-index: 4;
+	display: grid;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	border: var(--ose-bw) solid var(--ose-border);
+	border-radius: 50%;
+	color: var(--ose-fg);
+	background: var(--ose-surface);
+	cursor: pointer;
+	transform: translateY(-50%);
+	box-shadow: 0 10px 26px -12px rgb(var(--ose-shadow-color) / 0.55);
+	transition: transform var(--ose-speed) var(--ose-ease), opacity var(--ose-speed) var(--ose-ease),
+		background var(--ose-speed) var(--ose-ease);
+}
+
+.ose__arrow svg {
+	width: 20px;
+	height: 20px;
+	fill: currentColor;
+}
+
+.ose__arrow--prev {
+	inset-inline-start: -8px;
+}
+
+.ose__arrow--next {
+	inset-inline-end: -8px;
+}
+
+.ose__arrow:hover {
+	color: #fff;
+	background: linear-gradient(135deg, var(--ose-accent2), var(--ose-accent));
+	transform: translateY(-50%) scale(1.07);
+}
+
+.ose__arrow[disabled] {
+	opacity: 0.35;
+	cursor: default;
+}
+
+.ose:dir(rtl) .ose__arrow--prev svg,
+.ose:dir(rtl) .ose__arrow--next svg {
+	transform: scaleX(-1);
+}
+
+.ose__dots {
+	display: flex;
+	justify-content: center;
+	gap: 8px;
+	margin-block-start: 16px;
+}
+
+.ose__dot {
+	width: 8px;
+	height: 8px;
+	padding: 0;
+	border: 0;
+	border-radius: 999px;
+	background: var(--ose-border);
+	cursor: pointer;
+	transition: width var(--ose-speed) var(--ose-ease), background var(--ose-speed) var(--ose-ease);
+}
+
+.ose__dot.is-active {
+	width: 26px;
+	background: linear-gradient(90deg, var(--ose-accent2), var(--ose-accent));
+}
+
+/* --- Spotlight ---------------------------------------------- */
+.ose--spotlight .ose__track {
+	grid-template-columns: repeat(var(--ose-cols), minmax(0, 1fr));
+}
+
+.ose--spotlight .ose__card:first-child {
+	grid-column: span min(2, var(--ose-cols));
+	grid-row: span 2;
+}
+
+.ose--spotlight .ose__card:first-child .ose__title {
+	font-size: calc(var(--ose-title-size) * 1.5);
+}
+
+@container (max-width: 640px) {
+	.ose--spotlight .ose__card:first-child {
+		grid-column: 1 / -1;
+		grid-row: auto;
+	}
+}
+
+/* --- Stories ------------------------------------------------ */
+.ose--stories .ose__track {
+	display: flex;
+	overflow-x: auto;
+	scrollbar-width: none;
+	gap: var(--ose-gap);
+}
+
+.ose--stories .ose__track::-webkit-scrollbar {
+	display: none;
+}
+
+.ose--stories .ose__card {
+	flex: 0 0 auto;
+	width: 92px;
+	border: 0;
+	background: none;
+	box-shadow: none;
+	text-align: center;
+}
+
+.ose--stories .ose__media {
+	width: 100%;
+	aspect-ratio: 1 / 1;
+	border-radius: 50%;
+	padding: 3px;
+	background: linear-gradient(135deg, var(--ose-accent2), var(--ose-accent));
+}
+
+.ose--stories .ose__hit {
+	border-radius: 50%;
+	overflow: hidden;
+	border: 3px solid var(--ose-surface);
+}
+
+.ose--stories .ose__body {
+	padding: 8px 0 0;
+}
+
+.ose--stories .ose__title {
+	font-size: 0.75rem;
+	line-height: 1.3;
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
+	overflow-wrap: anywhere;
+}
+
+.ose--stories .ose__grad,
+.ose--stories .ose__badge,
+.ose--stories .ose__dur,
+.ose--stories .ose__play,
+.ose--stories .ose__meta,
+.ose--stories .ose__caption,
+.ose--stories .ose__cta {
+	display: none;
+}
+
+.ose--stories .ose__card {
+	text-align: center;
+}
+
+.ose--stories .ose__body {
+	align-items: center;
+	text-align: center;
+}
+
+.ose--stories .ose__card:hover .ose__media {
+	transform: scale(1.04);
+}
+
+.ose--stories .ose__media {
+	transition: transform var(--ose-speed) var(--ose-ease);
+}
+
+/* --- List --------------------------------------------------- */
+.ose--list .ose__track {
+	grid-template-columns: 1fr;
+}
+
+.ose--list .ose__card {
+	display: grid;
+	grid-template-columns: minmax(96px, 22%) 1fr;
+	align-items: stretch;
+	gap: 0;
+}
+
+.ose--list .ose__body {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+/* ============================================================
+   4. Card
+   ============================================================ */
+
+.ose__card {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	border: var(--ose-bw) solid var(--ose-border);
+	border-radius: var(--ose-radius);
+	background: var(--ose-card-bg, var(--ose-surface));
+	text-align: var(--ose-align);
+	transform-style: preserve-3d;
+	transition: transform var(--ose-speed) var(--ose-ease), box-shadow var(--ose-speed) var(--ose-ease),
+		border-color var(--ose-speed) var(--ose-ease), filter var(--ose-speed) var(--ose-ease);
+}
+
+.ose__media {
+	position: relative;
+	overflow: hidden;
+	aspect-ratio: var(--ose-ratio);
+	background: var(--ose-surface-2);
+	isolation: isolate;
+}
+
+.ose--ratio-auto .ose__media {
+	aspect-ratio: auto;
+	min-height: 160px;
+}
+
+.ose__hit {
+	position: absolute;
+	inset: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	border: 0;
+	background: none;
+	cursor: pointer;
+	appearance: none;
+}
+
+.ose__img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform calc(var(--ose-speed) * 1.6) var(--ose-ease), filter var(--ose-speed) var(--ose-ease);
+}
+
+.ose__placeholder {
+	position: absolute;
+	inset: 0;
+	display: grid;
+	place-items: center;
+	background: linear-gradient(135deg, var(--ose-accent2), var(--ose-accent));
+}
+
+.ose__placeholder svg {
+	width: 38%;
+	max-width: 72px;
+	height: auto;
+	fill: rgba(255, 255, 255, 0.85);
+}
+
+.ose__grad {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity var(--ose-speed) var(--ose-ease);
+}
+
+.ose--overlay-bottom .ose__grad {
+	opacity: 1;
+	background: linear-gradient(
+		to top,
+		color-mix(in srgb, var(--ose-ov-color) calc(var(--ose-ov-op) * 100%), transparent) 0%,
+		transparent 62%
+	);
+}
+
+.ose--overlay-full .ose__grad {
+	opacity: 1;
+	background: var(--ose-ov-color);
+	opacity: var(--ose-ov-op);
+}
+
+.ose--overlay-hover .ose__card:hover .ose__grad,
+.ose--overlay-hover .ose__card:focus-within .ose__grad {
+	opacity: var(--ose-ov-op);
+	background: var(--ose-ov-color);
+}
+
+/* Fallback where color-mix is unsupported. */
+@supports not (background: color-mix(in srgb, red 50%, blue)) {
+	.ose--overlay-bottom .ose__grad {
+		background: linear-gradient(to top, rgba(0, 0, 0, 0.72) 0%, transparent 62%);
+	}
+}
+
+.ose__play {
+	position: absolute;
+	top: 50%;
+	inset-inline-start: 50%;
+	display: grid;
+	place-items: center;
+	width: clamp(42px, 22%, 64px);
+	aspect-ratio: 1;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.92);
+	backdrop-filter: blur(6px);
+	transform: translate(-50%, -50%) scale(0.92);
+	box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.55);
+	transition: transform var(--ose-speed) var(--ose-ease), background var(--ose-speed) var(--ose-ease),
+		opacity var(--ose-speed) var(--ose-ease);
+	pointer-events: none;
+}
+
+.ose:dir(rtl) .ose__play {
+	transform: translate(50%, -50%) scale(0.92);
+}
+
+.ose__play svg {
+	width: 40%;
+	height: 40%;
+	margin-left: 8%;
+	fill: #111;
+}
+
+.ose__card:hover .ose__play,
+.ose__card:focus-within .ose__play {
+	background: #fff;
+	transform: translate(-50%, -50%) scale(1.06);
+}
+
+.ose:dir(rtl) .ose__card:hover .ose__play,
+.ose:dir(rtl) .ose__card:focus-within .ose__play {
+	transform: translate(50%, -50%) scale(1.06);
+}
+
+.ose__badge {
+	position: absolute;
+	z-index: 3;
+	display: grid;
+	place-items: center;
+	width: 30px;
+	height: 30px;
+	border-radius: 10px;
+	background: rgba(0, 0, 0, 0.42);
+	backdrop-filter: blur(8px);
+	pointer-events: none;
+}
+
+.ose__badge svg {
+	width: 17px;
+	height: 17px;
+	fill: #fff;
+}
+
+.ose__badge--instagram {
+	background: linear-gradient(135deg, #f9ce34, #ee2a7b 55%, #6228d7);
+}
+
+.ose__badge--facebook {
+	background: #1877f2;
+}
+
+.ose--badge-tl .ose__badge {
+	top: 10px;
+	inset-inline-start: 10px;
+}
+
+.ose--badge-tr .ose__badge {
+	top: 10px;
+	inset-inline-end: 10px;
+}
+
+.ose--badge-bl .ose__badge {
+	bottom: 10px;
+	inset-inline-start: 10px;
+}
+
+.ose--badge-br .ose__badge {
+	bottom: 10px;
+	inset-inline-end: 10px;
+}
+
+.ose__dur {
+	position: absolute;
+	bottom: 10px;
+	inset-inline-end: 10px;
+	z-index: 3;
+	padding: 3px 8px;
+	border-radius: 7px;
+	font-size: 11px;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+	color: #fff;
+	background: rgba(0, 0, 0, 0.62);
+	backdrop-filter: blur(6px);
+	pointer-events: none;
+}
+
+.ose--badge-br .ose__dur {
+	inset-inline-end: 48px;
+}
+
+.ose__inline {
+	position: absolute;
+	inset: 0;
+	z-index: 5;
+	background: #000;
+}
+
+.ose__inline iframe {
+	width: 100%;
+	height: 100%;
+	border: 0;
+	display: block;
+}
+
+.ose__body {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	padding: var(--ose-pad);
+	align-items: var(--ose-align);
+}
+
+.ose__title {
+	display: -webkit-box;
+	margin: 0;
+	overflow: hidden;
+	font-size: var(--ose-title-size);
+	font-weight: var(--ose-title-weight);
+	line-height: 1.35;
+	color: var(--ose-title-color, var(--ose-fg));
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: var(--ose-title-lines);
+	line-clamp: var(--ose-title-lines);
+}
+
+.ose__caption {
+	display: -webkit-box;
+	margin: 0;
+	overflow: hidden;
+	font-size: var(--ose-meta-size);
+	line-height: 1.5;
+	color: var(--ose-meta-color, var(--ose-muted));
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+	line-clamp: 3;
+}
+
+.ose__meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px;
+	font-size: var(--ose-meta-size);
+	color: var(--ose-meta-color, var(--ose-muted));
+}
+
+.ose__author {
+	max-width: 100%;
+	overflow: hidden;
+	direction: ltr;
+	unicode-bidi: isolate;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-weight: 600;
+	color: var(--ose-accent);
+}
+
+.ose__stats {
+	display: inline-flex;
+	gap: 10px;
+	margin-inline-start: auto;
+}
+
+.ose__stat {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	font-variant-numeric: tabular-nums;
+}
+
+.ose__stat svg {
+	width: 13px;
+	height: 13px;
+	fill: currentColor;
+	opacity: 0.75;
+}
+
+.ose__cta {
+	display: inline-flex;
+	align-items: center;
+	margin-block-start: 4px;
+	padding: 7px 14px;
+	border-radius: 999px;
+	font-size: var(--ose-meta-size);
+	font-weight: 700;
+	text-decoration: none;
+	color: var(--ose-accent);
+	background: color-mix(in srgb, var(--ose-accent) 12%, transparent);
+	transition: background var(--ose-speed) var(--ose-ease), color var(--ose-speed) var(--ose-ease);
+}
+
+.ose__cta:hover {
+	color: #fff;
+	background: var(--ose-accent);
+}
+
+/* ============================================================
+   5. Card styles
+   ============================================================ */
+
+.ose--card-glass .ose__card {
+	background: var(--ose-card-bg, var(--ose-glass));
+	backdrop-filter: blur(18px) saturate(140%);
+	-webkit-backdrop-filter: blur(18px) saturate(140%);
+	border-color: var(--ose-border);
+}
+
+.ose--card-neon .ose__card {
+	border-color: color-mix(in srgb, var(--ose-accent) 45%, transparent);
+	box-shadow: 0 0 0 1px color-mix(in srgb, var(--ose-accent) 22%, transparent),
+		0 12px 40px -18px var(--ose-accent);
+}
+
+.ose--card-neon .ose__card:hover {
+	box-shadow: 0 0 0 1px var(--ose-accent), 0 18px 54px -14px var(--ose-accent);
+}
+
+.ose--card-minimal .ose__card {
+	border: 0;
+	border-radius: var(--ose-radius);
+	background: transparent;
+	box-shadow: none;
+}
+
+.ose--card-minimal .ose__body {
+	padding-inline: 0;
+}
+
+.ose--card-gradient .ose__card {
+	border: 0;
+	padding: var(--ose-bw);
+	background: linear-gradient(135deg, var(--ose-accent2), var(--ose-accent));
+}
+
+.ose--card-gradient .ose__media {
+	border-radius: calc(var(--ose-radius) - var(--ose-bw));
+}
+
+.ose--card-gradient .ose__body {
+	border-radius: 0 0 calc(var(--ose-radius) - var(--ose-bw)) calc(var(--ose-radius) - var(--ose-bw));
+	background: var(--ose-card-bg, var(--ose-surface));
+}
+
+.ose--card-elevated .ose__card {
+	border-color: transparent;
+	background: var(--ose-card-bg, var(--ose-surface));
+	box-shadow: 0 18px 40px -22px rgb(var(--ose-shadow-color) / 0.55);
+}
+
+.ose--card-outline .ose__card {
+	background: transparent;
+	border-width: max(var(--ose-bw), 2px);
+	border-color: var(--ose-border);
+}
+
+.ose--card-polaroid .ose__card {
+	padding: 10px 10px 0;
+	background: var(--ose-card-bg, var(--ose-surface));
+	border-color: transparent;
+	box-shadow: 0 14px 32px -20px rgb(var(--ose-shadow-color) / 0.6);
+}
+
+.ose--card-polaroid .ose__media {
+	border-radius: calc(var(--ose-radius) * 0.35);
+}
+
+.ose--card-polaroid .ose__body {
+	padding-inline: 4px;
+	padding-block: 12px 16px;
+}
+
+.ose--card-cinematic .ose__card {
+	border-color: transparent;
+	background: #0b0c0f;
+	color: #f3f5f8;
+}
+
+.ose--card-cinematic .ose__title {
+	color: #fff;
+}
+
+.ose--card-cinematic .ose__meta,
+.ose--card-cinematic .ose__caption {
+	color: rgba(255, 255, 255, 0.66);
+}
+
+/* ============================================================
+   6. Shadows
+   ============================================================ */
+
+.ose--shadow-none .ose__card {
+	box-shadow: none;
+}
+
+.ose--shadow-sm .ose__card {
+	box-shadow: 0 4px 12px -6px rgb(var(--ose-shadow-color) / 0.35);
+}
+
+.ose--shadow-md .ose__card {
+	box-shadow: 0 12px 28px -16px rgb(var(--ose-shadow-color) / 0.45);
+}
+
+.ose--shadow-lg .ose__card {
+	box-shadow: 0 22px 48px -22px rgb(var(--ose-shadow-color) / 0.55);
+}
+
+.ose--shadow-xl .ose__card {
+	box-shadow: 0 34px 70px -28px rgb(var(--ose-shadow-color) / 0.65);
+}
+
+.ose--shadow-glow .ose__card {
+	box-shadow: 0 16px 44px -20px var(--ose-accent);
+}
+
+/* ============================================================
+   7. Hover effects
+   ============================================================ */
+
+.ose--hover-zoom .ose__card:hover .ose__img,
+.ose--hover-zoom .ose__card:focus-within .ose__img {
+	transform: scale(1.09);
+}
+
+.ose--hover-lift .ose__card:hover,
+.ose--hover-lift .ose__card:focus-within {
+	transform: translateY(-8px);
+	box-shadow: 0 30px 56px -26px rgb(var(--ose-shadow-color) / 0.6);
+}
+
+.ose--hover-tilt .ose__card {
+	perspective: 900px;
+}
+
+.ose--hover-tilt .ose__card:hover,
+.ose--hover-tilt .ose__card:focus-within {
+	transform: perspective(900px) rotateX(5deg) rotateY(-5deg) translateY(-6px);
+}
+
+.ose--hover-glow .ose__card:hover,
+.ose--hover-glow .ose__card:focus-within {
+	border-color: var(--ose-accent);
+	box-shadow: 0 0 0 1px var(--ose-accent), 0 22px 54px -22px var(--ose-accent);
+}
+
+.ose--hover-reveal .ose__body {
+	position: absolute;
+	inset-inline: 0;
+	bottom: 0;
+	z-index: 4;
+	color: #fff;
+	background: linear-gradient(to top, rgba(0, 0, 0, 0.88), transparent);
+	transform: translateY(12%);
+	opacity: 0;
+	transition: opacity var(--ose-speed) var(--ose-ease), transform var(--ose-speed) var(--ose-ease);
+	pointer-events: none;
+}
+
+.ose--hover-reveal .ose__card {
+	position: relative;
+}
+
+.ose--hover-reveal .ose__title,
+.ose--hover-reveal .ose__caption,
+.ose--hover-reveal .ose__meta {
+	color: #fff;
+}
+
+.ose--hover-reveal .ose__card:hover .ose__body,
+.ose--hover-reveal .ose__card:focus-within .ose__body {
+	opacity: 1;
+	transform: translateY(0);
+	pointer-events: auto;
+}
+
+.ose--hover-slide .ose__body {
+	transform: translateY(6px);
+	opacity: 0.82;
+	transition: transform var(--ose-speed) var(--ose-ease), opacity var(--ose-speed) var(--ose-ease);
+}
+
+.ose--hover-slide .ose__card:hover .ose__body,
+.ose--hover-slide .ose__card:focus-within .ose__body {
+	transform: translateY(0);
+	opacity: 1;
+}
+
+.ose--hover-blur .ose__track:hover .ose__card:not(:hover) {
+	filter: blur(2px) saturate(0.7);
+	opacity: 0.72;
+}
+
+/* ============================================================
+   8. Entrance animations
+   ============================================================ */
+
+.ose--anim .ose__card {
+	opacity: 0;
+	transition: opacity 620ms var(--ose-ease), transform 620ms var(--ose-ease);
+	transition-delay: calc(var(--ose-i, 0) * var(--ose-stagger));
+	will-change: transform, opacity;
+}
+
+.ose--anim-fade .ose__card {
+	transform: none;
+}
+
+.ose--anim-up .ose__card {
+	transform: translateY(26px);
+}
+
+.ose--anim-zoom .ose__card {
+	transform: scale(0.92);
+}
+
+.ose--anim-flip .ose__card {
+	transform: perspective(900px) rotateX(14deg);
+	transform-origin: top center;
+}
+
+.ose--anim .ose__card.is-in {
+	opacity: 1;
+	transform: none;
+}
+
+/* Filtered-out cards in tabbed / filtered layouts. */
+.ose__card.is-hidden {
+	display: none !important;
+}
+
+.ose__card.is-leaving {
+	opacity: 0;
+	transform: scale(0.95);
+}
+
+/* ============================================================
+   9. Load more
+   ============================================================ */
+
+.ose__more {
+	display: flex;
+	justify-content: center;
+	margin-block-start: clamp(16px, 2.5vw, 28px);
+}
+
+.ose__more-btn {
+	padding: 11px 28px;
+	border: var(--ose-bw) solid var(--ose-border);
+	border-radius: 999px;
+	font: inherit;
+	font-size: 0.9rem;
+	font-weight: 700;
+	color: var(--ose-fg);
+	background: transparent;
+	cursor: pointer;
+	transition: color var(--ose-speed) var(--ose-ease), background var(--ose-speed) var(--ose-ease),
+		transform var(--ose-speed) var(--ose-ease);
+}
+
+.ose__more-btn:hover {
+	color: #fff;
+	background: linear-gradient(135deg, var(--ose-accent2), var(--ose-accent));
+	border-color: transparent;
+	transform: translateY(-2px);
+}
+
+/* ============================================================
+   10. Lightbox
+   ============================================================ */
+
+.ose-lightbox {
+	position: fixed;
+	inset: 0;
+	z-index: 999999;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: clamp(12px, 3vw, 40px);
+	background: rgba(8, 9, 12, 0.88);
+	backdrop-filter: blur(14px);
+	-webkit-backdrop-filter: blur(14px);
+	opacity: 0;
+	transition: opacity 260ms ease;
+}
+
+.ose-lightbox.is-open {
+	opacity: 1;
+}
+
+.ose-lightbox__stage {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: min(100%, 460px);
+	max-height: 100%;
+	aspect-ratio: var(--ose-lb-ratio, 9 / 16);
+	border-radius: 20px;
+	overflow: hidden;
+	background: #000;
+	box-shadow: 0 40px 100px -30px rgba(0, 0, 0, 0.9);
+	transform: scale(0.94);
+	transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ose-lightbox.is-wide .ose-lightbox__stage {
+	width: min(100%, 980px);
+	--ose-lb-ratio: 16 / 9;
+}
+
+.ose-lightbox.is-open .ose-lightbox__stage {
+	transform: scale(1);
+}
+
+.ose-lightbox__stage iframe {
+	width: 100%;
+	height: 100%;
+	border: 0;
+	display: block;
+}
+
+.ose-lightbox__spinner {
+	position: absolute;
+	width: 34px;
+	height: 34px;
+	border: 3px solid rgba(255, 255, 255, 0.25);
+	border-top-color: #fff;
+	border-radius: 50%;
+	animation: ose-spin 800ms linear infinite;
+}
+
+@keyframes ose-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.ose-lightbox__btn {
+	position: absolute;
+	z-index: 2;
+	display: grid;
+	place-items: center;
+	width: 46px;
+	height: 46px;
+	padding: 0;
+	border: 1px solid rgba(255, 255, 255, 0.22);
+	border-radius: 50%;
+	color: #fff;
+	background: rgba(255, 255, 255, 0.12);
+	backdrop-filter: blur(8px);
+	cursor: pointer;
+	transition: background 240ms ease, transform 240ms ease;
+}
+
+.ose-lightbox__btn:hover {
+	background: rgba(255, 255, 255, 0.24);
+	transform: scale(1.06);
+}
+
+.ose-lightbox__btn svg {
+	width: 20px;
+	height: 20px;
+	fill: currentColor;
+}
+
+.ose-lightbox__close {
+	top: clamp(12px, 3vw, 28px);
+	inset-inline-end: clamp(12px, 3vw, 28px);
+}
+
+.ose-lightbox__prev {
+	top: 50%;
+	inset-inline-start: clamp(8px, 2vw, 28px);
+	transform: translateY(-50%);
+}
+
+.ose-lightbox__next {
+	top: 50%;
+	inset-inline-end: clamp(8px, 2vw, 28px);
+	transform: translateY(-50%);
+}
+
+.ose-lightbox__prev:hover,
+.ose-lightbox__next:hover {
+	transform: translateY(-50%) scale(1.06);
+}
+
+.ose-lightbox:dir(rtl) .ose-lightbox__prev svg,
+.ose-lightbox:dir(rtl) .ose-lightbox__next svg {
+	transform: scaleX(-1);
+}
+
+.ose-lightbox__caption {
+	position: absolute;
+	bottom: clamp(10px, 3vw, 26px);
+	inset-inline-start: 50%;
+	max-width: min(90vw, 620px);
+	padding: 8px 18px;
+	border-radius: 999px;
+	font-size: 0.85rem;
+	color: #fff;
+	background: rgba(0, 0, 0, 0.55);
+	transform: translateX(-50%);
+	text-align: center;
+}
+
+.ose-lightbox:dir(rtl) .ose-lightbox__caption {
+	transform: translateX(50%);
+}
+
+.ose-lightbox__link {
+	color: #fff;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+.ose-consent {
+	display: grid;
+	place-items: center;
+	gap: 14px;
+	padding: 28px;
+	text-align: center;
+	color: #fff;
+}
+
+.ose-consent__btn {
+	padding: 11px 26px;
+	border: 0;
+	border-radius: 999px;
+	font: inherit;
+	font-weight: 700;
+	color: #fff;
+	background: linear-gradient(135deg, var(--ose-accent2, #8a3ab9), var(--ose-accent, #e1306c));
+	cursor: pointer;
+}
+
+body.ose-lock {
+	overflow: hidden;
+}
+
+/* ============================================================
+   11. Empty state + a11y + motion
+   ============================================================ */
+
+.ose--empty {
+	padding: 22px;
+	border: 1px dashed var(--ose-border, rgba(0, 0, 0, 0.18));
+	border-radius: 14px;
+	font-size: 0.9rem;
+	text-align: center;
+}
+
+.ose :focus-visible,
+.ose-lightbox :focus-visible {
+	outline: 2px solid var(--ose-accent, #e1306c);
+	outline-offset: 3px;
+	border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ose *,
+	.ose-lightbox * {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+	.ose--anim .ose__card {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@media print {
+	.ose__play,
+	.ose__arrow,
+	.ose__dots,
+	.ose-lightbox {
+		display: none !important;
+	}
+}
