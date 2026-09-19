@@ -32,7 +32,7 @@ class OSE_Render {
 
 		$items = OSE_Query::get_items( $a );
 		if ( empty( $items ) ) {
-			return self::empty_state( $a );
+			return self::empty_state( $a ) . self::capture_report( $a );
 		}
 
 		++self::$uid;
@@ -122,6 +122,8 @@ class OSE_Render {
 			<?php if ( 'carousel' === $layout && $a['show_dots'] ) : ?>
 				<div class="ose__dots" role="tablist" aria-label="<?php esc_attr_e( 'Slides', 'ofnoa-social-embed' ); ?>"></div>
 			<?php endif; ?>
+
+			<?php self::editor_report( $a ); ?>
 
 			<?php if ( $a['show_cta'] ) : ?>
 				<div class="ose__more">
@@ -361,6 +363,59 @@ class OSE_Render {
 		return ( $a['show_author'] && $item['author'] )
 			|| ( $a['show_date'] && $item['date'] )
 			|| ( $a['show_stats'] && ( $item['views'] || $item['likes'] ) );
+	}
+
+	/**
+	 * The editor report as a string (used by the empty state).
+	 *
+	 * @param array $a Attributes.
+	 * @return string
+	 */
+	private static function capture_report( $a ) {
+		ob_start();
+		self::editor_report( $a );
+		return (string) ob_get_clean();
+	}
+
+	/**
+	 * Tell editors (never visitors) which links from a manual list did not
+	 * make it into the gallery, and why.
+	 *
+	 * @param array $a Attributes.
+	 * @return void
+	 */
+	private static function editor_report( $a ) {
+		if ( 'urls' !== $a['source'] || ! current_user_can( 'edit_posts' ) ) {
+			return;
+		}
+		$report = OSE_Query::$last_report;
+		if ( empty( $report['skipped'] ) ) {
+			return;
+		}
+		?>
+		<div class="ose__editor-note" role="note">
+			<strong>
+				<?php
+				printf(
+					/* translators: 1: shown, 2: total */
+					esc_html__( 'Ofnoa Social Embed — showing %1$d of %2$d links. Only editors see this note.', 'ofnoa-social-embed' ),
+					(int) $report['shown'],
+					(int) $report['total']
+				);
+				?>
+			</strong>
+			<ul>
+				<?php foreach ( $report['skipped'] as $row ) : ?>
+					<li>
+						<?php if ( $row['url'] ) : ?>
+							<code><?php echo esc_html( wp_html_excerpt( $row['url'], 80, '…' ) ); ?></code> —
+						<?php endif; ?>
+						<?php echo esc_html( $row['reason'] ); ?>
+					</li>
+				<?php endforeach; ?>
+			</ul>
+		</div>
+		<?php
 	}
 
 	/**

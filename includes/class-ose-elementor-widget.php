@@ -182,7 +182,7 @@ class OSE_Elementor_Widget extends \Elementor\Widget_Base {
 		if ( 'urls' === $key ) {
 			$args['condition'] = array( 'source' => 'urls' );
 		}
-		if ( in_array( $key, array( 'collection', 'ids' ), true ) ) {
+		if ( in_array( $key, array( 'collection', 'ids', 'limit', 'orderby', 'order' ), true ) ) {
 			$args['condition'] = array( 'source' => 'library' );
 		}
 		if ( in_array( $key, array( 'show_arrows', 'show_dots', 'autoplay', 'autoplay_speed', 'loop' ), true ) ) {

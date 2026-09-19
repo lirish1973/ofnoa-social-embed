@@ -51,23 +51,97 @@ class OSE_Query {
 	}
 
 	/**
+	 * What happened while reading the last manual URL list — shown to editors
+	 * under the gallery so a missing video is never a mystery.
+	 *
+	 * @var array
+	 */
+	public static $last_report = array(
+		'total'   => 0,
+		'shown'   => 0,
+		'skipped' => array(),
+	);
+
+	/**
+	 * Hard ceiling for a manual list, as a safety net only.
+	 */
+	const MAX_URLS = 100;
+
+	/**
+	 * Split a pasted list into URLs. Accepts one per line, or several on a
+	 * line separated by spaces, tabs, commas, semicolons or pipes — URLs
+	 * never contain any of those unescaped.
+	 *
+	 * @param string $raw Raw textarea / attribute value.
+	 * @return string[]
+	 */
+	public static function split_url_list( $raw ) {
+		$parts = preg_split( '/[\s,;|]+/u', (string) $raw );
+		$parts = array_filter(
+			array_map( 'trim', (array) $parts ),
+			function ( $p ) {
+				return '' !== $p;
+			}
+		);
+		return array_values( array_unique( $parts ) );
+	}
+
+	/**
 	 * Items from a manual URL list.
+	 *
+	 * Every URL in the list is shown — the list itself is the selection, so
+	 * the "How many videos" limit (a library setting) does not cut it short.
 	 *
 	 * @param array $a Attributes.
 	 * @return array
 	 */
 	private static function items_from_urls( $a ) {
-		$raw = (string) $a['urls'];
-		$raw = str_replace( array( '|', ',' ), "\n", $raw );
-		$list = array_filter( array_map( 'trim', preg_split( '/\r\n|\r|\n/', $raw ) ) );
-		$list = array_slice( array_values( array_unique( $list ) ), 0, (int) $a['limit'] );
+		$list   = self::split_url_list( $a['urls'] );
+		$report = array(
+			'total'   => count( $list ),
+			'shown'   => 0,
+			'skipped' => array(),
+		);
+
+		if ( count( $list ) > self::MAX_URLS ) {
+			$report['skipped'][] = array(
+				'url'    => '',
+				'reason' => sprintf(
+					/* translators: 1: number dropped, 2: maximum */
+					__( '%1$d URLs beyond the maximum of %2$d per gallery', 'ofnoa-social-embed' ),
+					count( $list ) - self::MAX_URLS,
+					self::MAX_URLS
+				),
+			);
+			$list = array_slice( $list, 0, self::MAX_URLS );
+		}
 
 		$items = array();
 		foreach ( $list as $index => $url ) {
 			$parsed = OSE_Resolver::parse( $url );
 			if ( ! $parsed ) {
+				$host = (string) wp_parse_url( preg_match( '#^https?://#i', $url ) ? $url : 'https://' . $url, PHP_URL_HOST );
+				$report['skipped'][] = array(
+					'url'    => $url,
+					'reason' => ( $host && false !== strpos( $host, '.' ) )
+						? sprintf(
+							/* translators: %s: host name */
+							__( '%s is not supported (Instagram, TikTok and Facebook only)', 'ofnoa-social-embed' ),
+							$host
+						)
+						: __( 'not a link', 'ofnoa-social-embed' ),
+				);
 				continue;
 			}
+			$embed = OSE_Resolver::embed_url( $parsed );
+			if ( '' === $embed ) {
+				$report['skipped'][] = array(
+					'url'    => $url,
+					'reason' => __( 'points to a profile or page, not to a single video', 'ofnoa-social-embed' ),
+				);
+				continue;
+			}
+
 			$meta    = OSE_Resolver::fetch_meta( $parsed['url'] );
 			$items[] = self::normalise(
 				array(
@@ -75,13 +149,16 @@ class OSE_Query {
 					'key'      => 'u' . $index,
 					'url'      => $parsed['url'],
 					'platform' => $parsed['platform'],
-					'embed'    => OSE_Resolver::embed_url( $parsed ),
+					'embed'    => $embed,
 					'poster'   => $meta['thumbnail'],
 					'title'    => $meta['title'],
 					'author'   => $meta['author'],
 				)
 			);
 		}
+
+		$report['shown']   = count( $items );
+		self::$last_report = $report;
 		return $items;
 	}
 
@@ -92,6 +169,12 @@ class OSE_Query {
 	 * @return array
 	 */
 	private static function items_from_library( $a ) {
+		self::$last_report = array(
+			'total'   => 0,
+			'shown'   => 0,
+			'skipped' => array(),
+		);
+
 		$args = array(
 			'post_type'              => OSE_CPT::POST_TYPE,
 			'post_status'            => 'publish',

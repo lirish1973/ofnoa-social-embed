@@ -152,7 +152,7 @@ class OSE_Helpers {
 			),
 			'urls'              => array(
 				'group'   => 'content',
-				'label'   => __( 'Video URLs (one per line)', 'ofnoa-social-embed' ),
+				'label'   => __( 'Video URLs (one per line, or separated by spaces / commas)', 'ofnoa-social-embed' ),
 				'type'    => 'textarea',
 				'default' => '',
 			),
@@ -164,7 +164,7 @@ class OSE_Helpers {
 			),
 			'limit'             => array(
 				'group'   => 'content',
-				'label'   => __( 'How many videos', 'ofnoa-social-embed' ),
+				'label'   => __( 'How many videos (library only — a URL list always shows every link)', 'ofnoa-social-embed' ),
 				'type'    => 'number',
 				'default' => 12,
 				'min'     => 1,

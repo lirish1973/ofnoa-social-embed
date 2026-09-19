@@ -294,14 +294,19 @@ class OSE_Resolver {
 		 * Only a few lookups are allowed per request; the rest resolve on later
 		 * views, or instantly in the admin where $refresh is true.
 		 */
-		if ( ! $refresh && ! is_admin() && ! wp_doing_cron() ) {
+		// Editor previews (Elementor, the block editor) and logged-in editors
+		// may fetch every poster, so the cache is warm before visitors arrive.
+		$editor_request = wp_doing_ajax()
+			|| ( defined( 'REST_REQUEST' ) && REST_REQUEST )
+			|| current_user_can( 'edit_posts' );
+		if ( ! $refresh && ! is_admin() && ! wp_doing_cron() && ! $editor_request ) {
 			if ( null === $budget ) {
 				/**
 				 * Filter how many posters may be resolved during one front-end request.
 				 *
 				 * @param int $budget Number of lookups.
 				 */
-				$budget = (int) apply_filters( 'ose_front_fetch_budget', 4 );
+				$budget = (int) apply_filters( 'ose_front_fetch_budget', 6 );
 			}
 			if ( $budget <= 0 ) {
 				return $empty;

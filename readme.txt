@@ -4,7 +4,7 @@ Tags: instagram, tiktok, facebook, reels, video
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.1.4
+Stable tag: 1.1.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,6 +52,12 @@ Set a featured image on the video — it always wins. Failing that, the card fal
 Yes. The layout uses logical properties throughout and arrows, play icons and the lightbox all mirror correctly.
 
 == Changelog ==
+
+= 1.1.5 =
+* A manual URL list now shows every link in it. "How many videos" is a library setting and no longer cuts a URL list short; it is hidden in the block and Elementor panels when the source is a URL list.
+* URL lists accept links separated by new lines, spaces, tabs, commas, semicolons or pipes — two links pasted on one line are no longer merged into one.
+* Links that cannot be shown (another network, or a profile rather than a single video) are listed under the gallery, with the reason, for logged-in editors only. Visitors never see the note.
+* Editors and editor previews (Elementor, block editor) resolve every poster immediately, so the cache is warm before visitors arrive.
 
 = 1.1.4 =
 * Carousel always slides: when there are no more videos than columns, it shows one card fewer per view (at every breakpoint) so arrows, dots and auto-advance have somewhere to go. Previously the controls were hidden and nothing moved.

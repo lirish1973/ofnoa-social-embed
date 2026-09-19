@@ -182,7 +182,7 @@
 				if ( def.key === 'urls' && attributes.source !== 'urls' ) {
 					return false;
 				}
-				if ( ( def.key === 'collection' || def.key === 'ids' ) && attributes.source === 'urls' ) {
+				if ( [ 'collection', 'ids', 'limit', 'orderby', 'order' ].indexOf( def.key ) !== -1 && attributes.source === 'urls' ) {
 					return false;
 				}
 				if ( ( def.key === 'tabs_from' || def.key === 'tab_all_label' ) && attributes.layout !== 'tabs' && ! attributes.show_filter ) {
