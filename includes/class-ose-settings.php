@@ -298,7 +298,7 @@ class OSE_Settings {
 							<th scope="row"><?php esc_html_e( 'Cache', 'ofnoa-social-embed' ); ?></th>
 							<td>
 								<a class="button" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=ose_flush_cache' ), 'ose_flush_cache' ) ); ?>">
-									<?php esc_html_e( 'Clear cached posters & lookups', 'ofnoa-social-embed' ); ?>
+									<?php esc_html_e( 'Clear cached posters, lookups & update check', 'ofnoa-social-embed' ); ?>
 								</a>
 							</td>
 						</tr>
@@ -541,6 +541,7 @@ class OSE_Settings {
 			wp_die( esc_html__( 'Not allowed.', 'ofnoa-social-embed' ) );
 		}
 		OSE_Resolver::flush_cache();
+		OSE_Updater::forget();
 		wp_safe_redirect(
 			add_query_arg(
 				array(

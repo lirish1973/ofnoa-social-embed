@@ -49,6 +49,9 @@ class OSE_Updater {
 	 */
 	public static function latest( $force = false ) {
 		if ( ! $force ) {
+			$force = self::is_forced_check();
+		}
+		if ( ! $force ) {
 			$cached = get_site_transient( self::CACHE_KEY );
 			if ( is_array( $cached ) && isset( $cached['version'], $cached['package'] ) ) {
 				return $cached;
@@ -110,6 +113,28 @@ class OSE_Updater {
 
 		set_site_transient( self::CACHE_KEY, $data, self::CACHE_TTL );
 		return $data;
+	}
+
+	/**
+	 * Did the admin just press "Check again" on Dashboard → Updates?
+	 * That page sets force-check=1; bypass our own cache so the answer is live.
+	 *
+	 * @return bool
+	 */
+	private static function is_forced_check() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only cache bypass, mirrors core.
+		return is_admin() && ! empty( $_GET['force-check'] ) && current_user_can( 'update_plugins' );
+	}
+
+	/**
+	 * Drop the cached release so the next check asks GitHub directly.
+	 *
+	 * @return void
+	 */
+	public static function forget() {
+		delete_site_transient( self::CACHE_KEY );
+		// WordPress keeps its own list of known updates; refresh that too.
+		delete_site_transient( 'update_plugins' );
 	}
 
 	/**
@@ -245,7 +270,7 @@ class OSE_Updater {
 	 */
 	public static function clear_cache( $upgrader, $options ) {
 		if ( isset( $options['action'], $options['type'] ) && 'update' === $options['action'] && 'plugin' === $options['type'] ) {
-			delete_site_transient( self::CACHE_KEY );
+			self::forget();
 		}
 	}
 

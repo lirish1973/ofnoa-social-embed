@@ -4,7 +4,7 @@ Tags: instagram, tiktok, facebook, reels, video
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,6 +52,10 @@ Set a featured image on the video — it always wins. Failing that, the card fal
 Yes. The layout uses logical properties throughout and arrows, play icons and the lightbox all mirror correctly.
 
 == Changelog ==
+
+= 1.1.1 =
+* Dashboard → Updates → "Check again" now asks GitHub directly instead of waiting out the six-hour cache.
+* The settings cache button also clears the update check.
 
 = 1.1.0 =
 * Added TikTok: video and photo posts, short links, the official TikTok player and automatic poster/handle resolution through its open oEmbed endpoint.
