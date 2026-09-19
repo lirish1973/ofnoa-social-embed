@@ -4,7 +4,7 @@ Tags: instagram, tiktok, facebook, reels, video
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.1.5
+Stable tag: 1.1.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,6 +52,12 @@ Set a featured image on the video — it always wins. Failing that, the card fal
 Yes. The layout uses logical properties throughout and arrows, play icons and the lightbox all mirror correctly.
 
 == Changelog ==
+
+= 1.1.6 =
+* Links pasted with nothing between them ("…068https://…") are now split into separate videos, so every video in the list shows.
+* Buttons (arrows, dots, tabs, play, load more, lightbox) are isolated from theme button styles (e.g. Hello Elementor), so every layout looks as designed on desktop.
+* A closed lightbox no longer leaves an invisible overlay that blocks clicks on the page.
+* The Elementor widget is excluded from Element Caching so setting changes show immediately.
 
 = 1.1.5 =
 * A manual URL list now shows every link in it. "How many videos" is a library setting and no longer cuts a URL list short; it is hidden in the block and Elementor panels when the source is a URL list.

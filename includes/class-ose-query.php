@@ -76,7 +76,10 @@ class OSE_Query {
 	 * @return string[]
 	 */
 	public static function split_url_list( $raw ) {
-		$parts = preg_split( '/[\s,;|]+/u', (string) $raw );
+		// Two links pasted with nothing between them ("…068https://…") are
+		// still two links: every http(s):// begins a new one.
+		$raw   = preg_replace( '#(?=https?://)#i', "\n", (string) $raw );
+		$parts = preg_split( '/[\s,;|]+/u', $raw );
 		$parts = array_filter(
 			array_map( 'trim', (array) $parts ),
 			function ( $p ) {

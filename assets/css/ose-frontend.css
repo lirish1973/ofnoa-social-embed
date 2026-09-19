@@ -90,6 +90,48 @@
 }
 
 /* ============================================================
+   0. Button isolation
+   Themes (Hello Elementor, Elementor kits, Astra…) style every <button> with
+   borders, padding, coloured backgrounds and display:block. Neutralise that
+   inside the gallery and the lightbox. Component rules below carry an
+   ID-level boost, :not(#_ose), so they win over this reset and over themes
+   while keeping their order relative to each other.
+   ============================================================ */
+
+.ose.ose button,
+.ose-lightbox.ose-lightbox button {
+	-webkit-appearance: none;
+	appearance: none;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: none;
+	box-shadow: none;
+	color: inherit;
+	font: inherit;
+	line-height: inherit;
+	letter-spacing: normal;
+	text-transform: none;
+	text-decoration: none;
+	text-shadow: none;
+	min-width: 0;
+	min-height: 0;
+	width: auto;
+	height: auto;
+	transition: none;
+}
+
+.ose.ose button:is(:hover, :focus, :active),
+.ose-lightbox.ose-lightbox button:is(:hover, :focus, :active) {
+	background-color: transparent;
+	color: inherit;
+	border-color: transparent;
+	box-shadow: none;
+	text-decoration: none;
+}
+
+/* ============================================================
    2. Header, tabs
    ============================================================ */
 
@@ -148,7 +190,7 @@
 	padding-block-end: 2px;
 }
 
-.ose__tab {
+:not(#_ose) .ose__tab {
 	position: relative;
 	padding: 9px 18px;
 	border: var(--ose-bw) solid var(--ose-border);
@@ -163,12 +205,12 @@
 		border-color var(--ose-speed) var(--ose-ease), transform var(--ose-speed) var(--ose-ease);
 }
 
-.ose__tab:hover {
+:not(#_ose) .ose__tab:hover {
 	color: var(--ose-fg);
 	transform: translateY(-1px);
 }
 
-.ose__tab.is-active {
+:not(#_ose) .ose__tab.is-active {
 	color: #fff;
 	border-color: transparent;
 	background: linear-gradient(135deg, var(--ose-accent2), var(--ose-accent));
@@ -279,14 +321,14 @@
 
 @container (max-width: 1024px) {
 	.ose--carousel .ose__card,
-	.ose--reels .ose__card {
+.ose--reels .ose__card {
 		flex-basis: calc((100% - (var(--ose-cols-t) - 1) * var(--ose-gap)) / var(--ose-cols-t));
 	}
 }
 
 @container (max-width: 640px) {
 	.ose--carousel .ose__card,
-	.ose--reels .ose__card {
+.ose--reels .ose__card {
 		flex-basis: calc((100% - (var(--ose-cols-m) - 1) * var(--ose-gap)) / var(--ose-cols-m));
 	}
 }
@@ -295,7 +337,7 @@
 	scroll-snap-align: center;
 }
 
-.ose__arrow {
+:not(#_ose) .ose__arrow {
 	position: absolute;
 	top: 50%;
 	z-index: 4;
@@ -315,7 +357,7 @@
 		background var(--ose-speed) var(--ose-ease);
 }
 
-.ose__arrow svg {
+:not(#_ose) .ose__arrow svg {
 	width: 20px;
 	height: 20px;
 	fill: currentColor;
@@ -329,19 +371,19 @@
 	inset-inline-end: -8px;
 }
 
-.ose__arrow:hover {
+:not(#_ose) .ose__arrow:hover {
 	color: #fff;
 	background: linear-gradient(135deg, var(--ose-accent2), var(--ose-accent));
 	transform: translateY(-50%) scale(1.07);
 }
 
-.ose__arrow[disabled] {
+:not(#_ose) .ose__arrow[disabled] {
 	opacity: 0.35;
 	cursor: default;
 }
 
 /* The UA's [hidden] rule loses to display:grid above; restate it. */
-.ose__arrow[hidden],
+:not(#_ose) .ose__arrow[hidden],
 .ose__dots[hidden] {
 	display: none;
 }
@@ -380,7 +422,7 @@
 	margin-block-start: 16px;
 }
 
-.ose__dot {
+:not(#_ose) .ose__dot {
 	width: 8px;
 	height: 8px;
 	padding: 0;
@@ -391,7 +433,7 @@
 	transition: width var(--ose-speed) var(--ose-ease), background var(--ose-speed) var(--ose-ease);
 }
 
-.ose__dot.is-active {
+:not(#_ose) .ose__dot.is-active {
 	width: 26px;
 	background: linear-gradient(90deg, var(--ose-accent2), var(--ose-accent));
 }
@@ -446,7 +488,7 @@
 	background: linear-gradient(135deg, var(--ose-accent2), var(--ose-accent));
 }
 
-.ose--stories .ose__hit {
+:not(#_ose) .ose--stories .ose__hit {
 	border-radius: 50%;
 	overflow: hidden;
 	border: 3px solid var(--ose-surface);
@@ -540,7 +582,7 @@
 	min-height: 160px;
 }
 
-.ose__hit {
+:not(#_ose) .ose__hit {
 	position: absolute;
 	inset: 0;
 	display: block;
@@ -1102,7 +1144,11 @@
 	margin-block-start: clamp(16px, 2.5vw, 28px);
 }
 
-.ose__more-btn {
+.ose__more[hidden] {
+	display: none;
+}
+
+:not(#_ose) .ose__more-btn {
 	padding: 11px 28px;
 	border: var(--ose-bw) solid var(--ose-border);
 	border-radius: 999px;
@@ -1116,7 +1162,7 @@
 		transform var(--ose-speed) var(--ose-ease);
 }
 
-.ose__more-btn:hover {
+:not(#_ose) .ose__more-btn:hover {
 	color: #fff;
 	background: linear-gradient(135deg, var(--ose-accent2), var(--ose-accent));
 	border-color: transparent;
@@ -1144,6 +1190,20 @@
 
 .ose-lightbox.is-open {
 	opacity: 1;
+}
+
+/* display:flex above would otherwise beat the [hidden] attribute and leave an
+   invisible full-screen layer that swallows every click after closing. */
+.ose-lightbox[hidden] {
+	display: none !important;
+}
+
+.ose-lightbox:not(.is-open) {
+	pointer-events: none;
+}
+
+:not(#_ose) .ose-lightbox__btn[hidden] {
+	display: none;
 }
 
 .ose-lightbox__stage {
@@ -1194,7 +1254,7 @@
 	}
 }
 
-.ose-lightbox__btn {
+:not(#_ose) .ose-lightbox__btn {
 	position: absolute;
 	z-index: 2;
 	display: grid;
@@ -1211,41 +1271,41 @@
 	transition: background 240ms ease, transform 240ms ease;
 }
 
-.ose-lightbox__btn:hover {
+:not(#_ose) .ose-lightbox__btn:hover {
 	background: rgba(255, 255, 255, 0.24);
 	transform: scale(1.06);
 }
 
-.ose-lightbox__btn svg {
+:not(#_ose) .ose-lightbox__btn svg {
 	width: 20px;
 	height: 20px;
 	fill: currentColor;
 }
 
-.ose-lightbox__close {
+:not(#_ose) .ose-lightbox__close {
 	top: clamp(12px, 3vw, 28px);
 	inset-inline-end: clamp(12px, 3vw, 28px);
 }
 
-.ose-lightbox__prev {
+:not(#_ose) .ose-lightbox__prev {
 	top: 50%;
 	inset-inline-start: clamp(8px, 2vw, 28px);
 	transform: translateY(-50%);
 }
 
-.ose-lightbox__next {
+:not(#_ose) .ose-lightbox__next {
 	top: 50%;
 	inset-inline-end: clamp(8px, 2vw, 28px);
 	transform: translateY(-50%);
 }
 
-.ose-lightbox__prev:hover,
-.ose-lightbox__next:hover {
+:not(#_ose) .ose-lightbox__prev:hover,
+:not(#_ose) .ose-lightbox__next:hover {
 	transform: translateY(-50%) scale(1.06);
 }
 
-.ose-lightbox:dir(rtl) .ose-lightbox__prev svg,
-.ose-lightbox:dir(rtl) .ose-lightbox__next svg {
+:not(#_ose) .ose-lightbox:dir(rtl) .ose-lightbox__prev svg,
+:not(#_ose) .ose-lightbox:dir(rtl) .ose-lightbox__next svg {
 	transform: scaleX(-1);
 }
 
@@ -1282,7 +1342,7 @@
 	color: #fff;
 }
 
-.ose-consent__btn {
+:not(#_ose) .ose-consent__btn {
 	padding: 11px 26px;
 	border: 0;
 	border-radius: 999px;
@@ -1318,7 +1378,7 @@ body.ose-lock {
 
 @media (prefers-reduced-motion: reduce) {
 	.ose *,
-	.ose-lightbox * {
+.ose-lightbox * {
 		animation-duration: 0.01ms !important;
 		animation-iteration-count: 1 !important;
 		transition-duration: 0.01ms !important;
@@ -1332,9 +1392,9 @@ body.ose-lock {
 
 @media print {
 	.ose__play,
-	.ose__arrow,
-	.ose__dots,
-	.ose-lightbox {
+:not(#_ose) .ose__arrow,
+.ose__dots,
+.ose-lightbox {
 		display: none !important;
 	}
 }

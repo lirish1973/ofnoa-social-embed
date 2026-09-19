@@ -62,6 +62,17 @@ class OSE_Elementor_Widget extends \Elementor\Widget_Base {
 	}
 
 	/**
+	 * The output depends on the video library, remote posters and who is
+	 * viewing (editors get a diagnostics note), so Elementor's Element
+	 * Caching must never store it.
+	 *
+	 * @return bool
+	 */
+	public function is_dynamic_content(): bool {
+		return true;
+	}
+
+	/**
 	 * Front-end script handles.
 	 *
 	 * @return array
