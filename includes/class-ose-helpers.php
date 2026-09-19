@@ -544,7 +544,7 @@ class OSE_Helpers {
 				'group'   => 'behaviour',
 				'label'   => __( 'Auto advance carousel', 'ofnoa-social-embed' ),
 				'type'    => 'toggle',
-				'default' => 0,
+				'default' => 1,
 			),
 			'autoplay_speed'    => array(
 				'group'   => 'behaviour',

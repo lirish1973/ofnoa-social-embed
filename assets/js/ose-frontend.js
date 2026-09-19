@@ -465,6 +465,35 @@
 			return window.getComputedStyle( track ).direction === 'rtl';
 		}
 
+		/*
+		 * A carousel with as many videos as columns has nowhere to slide.
+		 * Show one card fewer per view (at every breakpoint) so it always
+		 * moves. Re-applied whenever the number of visible cards changes.
+		 */
+		var fitsColumns = layout === 'carousel' || layout === 'reels';
+		var baseColumns = null;
+		var fittedFor = -1;
+		function fitColumns() {
+			if ( ! fitsColumns ) {
+				return;
+			}
+			var n = cards().length;
+			if ( n === fittedFor ) {
+				return;
+			}
+			fittedFor = n;
+			if ( ! baseColumns ) {
+				var cs = window.getComputedStyle( root );
+				baseColumns = [ '--ose-cols', '--ose-cols-t', '--ose-cols-m' ].map( function ( name ) {
+					return [ name, parseInt( cs.getPropertyValue( name ), 10 ) || 1 ];
+				} );
+			}
+			baseColumns.forEach( function ( pair ) {
+				var value = n > 1 ? Math.min( pair[ 1 ], n - 1 ) : pair[ 1 ];
+				root.style.setProperty( pair[ 0 ], String( value ) );
+			} );
+		}
+
 		function cards() {
 			return self.cards.filter( function ( c ) {
 				return ! c.classList.contains( 'is-hidden' );
@@ -586,6 +615,7 @@
 
 		// ---------- UI state ----------
 		function refresh() {
+			fitColumns();
 			var scrollable = overflows();
 			root.classList.toggle( 'ose--static', ! scrollable );
 			if ( prev ) {
@@ -737,6 +767,11 @@
 			root.addEventListener( 'mouseenter', stop );
 			root.addEventListener( 'mouseleave', start );
 			root.addEventListener( 'focusin', stop );
+			root.addEventListener( 'focusout', function ( e ) {
+				if ( ! root.contains( e.relatedTarget ) ) {
+					start();
+				}
+			} );
 			root.addEventListener( 'touchstart', stop, { passive: true } );
 			document.addEventListener( 'visibilitychange', function () {
 				if ( document.hidden ) {
