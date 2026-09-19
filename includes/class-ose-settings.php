@@ -295,6 +295,45 @@ class OSE_Settings {
 							</td>
 						</tr>
 						<tr>
+							<th scope="row"><?php esc_html_e( 'Update status', 'ofnoa-social-embed' ); ?></th>
+							<td>
+								<?php
+								$ose_status = OSE_Updater::status();
+								$ose_latest = get_site_transient( OSE_Updater::CACHE_KEY );
+								?>
+								<p>
+									<?php
+									printf(
+										/* translators: %s: version */
+										esc_html__( 'Installed: %s', 'ofnoa-social-embed' ),
+										'<strong>' . esc_html( OSE_VERSION ) . '</strong>'
+									);
+									if ( is_array( $ose_latest ) && ! empty( $ose_latest['version'] ) ) {
+										echo ' &nbsp;·&nbsp; ';
+										printf(
+											/* translators: 1: version, 2: lookup method */
+											esc_html__( 'Latest on GitHub: %1$s (via %2$s)', 'ofnoa-social-embed' ),
+											'<strong>' . esc_html( $ose_latest['version'] ) . '</strong>',
+											esc_html( $ose_latest['source'] )
+										);
+									}
+									if ( $ose_status['checked'] ) {
+										echo ' &nbsp;·&nbsp; ';
+										printf(
+											/* translators: %s: time ago */
+											esc_html__( 'Checked %s ago', 'ofnoa-social-embed' ),
+											esc_html( human_time_diff( (int) $ose_status['checked'] ) )
+										);
+									}
+									?>
+								</p>
+								<?php if ( ! $ose_status['ok'] && $ose_status['error'] ) : ?>
+									<p class="description" style="color:#b32d2e"><?php echo esc_html( $ose_status['error'] ); ?></p>
+								<?php endif; ?>
+								<a class="button" href="<?php echo esc_url( OSE_Updater::check_now_url() ); ?>"><?php esc_html_e( 'Check for updates now', 'ofnoa-social-embed' ); ?></a>
+							</td>
+						</tr>
+						<tr>
 							<th scope="row"><?php esc_html_e( 'Cache', 'ofnoa-social-embed' ); ?></th>
 							<td>
 								<a class="button" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=ose_flush_cache' ), 'ose_flush_cache' ) ); ?>">

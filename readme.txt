@@ -4,7 +4,7 @@ Tags: instagram, tiktok, facebook, reels, video
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,6 +52,14 @@ Set a featured image on the video — it always wins. Failing that, the card fal
 Yes. The layout uses logical properties throughout and arrows, play icons and the lightbox all mirror correctly.
 
 == Changelog ==
+
+= 1.1.2 =
+* Updates now appear without waiting for WordPress' 12-hour refresh: the update is injected every time WordPress reads its update list, not only when it rebuilds it.
+* The latest version is read from the github.com/…/releases/latest redirect instead of the REST API, so shared-hosting IPs no longer hit GitHub's 60-requests-per-hour limit (the API stays as a fallback).
+* New "Check for updates" link under the plugin row, with a result banner.
+* New update status in Settings → General: installed version, latest found, last check and the error if any.
+* The plugin is now listed for WordPress' "Enable auto-updates" toggle.
+* Cache shortened to one hour (15 minutes after a failed check).
 
 = 1.1.1 =
 * Dashboard → Updates → "Check again" now asks GitHub directly instead of waiting out the six-hour cache.
