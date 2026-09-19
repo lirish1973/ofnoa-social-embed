@@ -1,15 +1,25 @@
 name: Build & Release
 
+# Runs when main changes AND when a version tag is pushed (e.g. by `gpush -t`).
+# Either path ends in the same place: one GitHub Release per version, with the
+# installable zip attached. The job is idempotent — if the release for the
+# current version already exists, it does nothing.
 on:
   push:
     branches: [ main, master ]
+    tags: [ 'v*' ]
     paths-ignore:
       - '**.md'
-      - '.github/**'
   workflow_dispatch:
 
 permissions:
   contents: write
+
+# A main push and a tag push can land seconds apart. Serialise them so the
+# second run sees the release the first one made, instead of racing it.
+concurrency:
+  group: release-${{ github.repository }}
+  cancel-in-progress: false
 
 jobs:
   release:
@@ -25,31 +35,45 @@ jobs:
         run: |
           VERSION=$(grep -m1 -oP '^\s*\*\s*Version:\s*\K[0-9A-Za-z.\-]+' ofnoa-social-embed.php)
           if [ -z "$VERSION" ]; then
-            echo "Could not read the version from the plugin header." >&2
+            echo "::error::Could not read the version from the plugin header."
+            exit 1
+          fi
+          # A pushed tag must agree with the header, or the zip would lie.
+          if [ "$GITHUB_REF_TYPE" = "tag" ] && [ "$GITHUB_REF_NAME" != "v$VERSION" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match the plugin header version $VERSION."
             exit 1
           fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
-          echo "Detected version $VERSION"
+          echo "tag=v$VERSION"     >> "$GITHUB_OUTPUT"
+          echo "Plugin version: $VERSION"
 
-      - name: Skip if this version was already released
+      - name: Decide what is missing
         id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
         run: |
-          if git rev-parse "refs/tags/${{ steps.version.outputs.tag }}" >/dev/null 2>&1; then
-            echo "exists=true" >> "$GITHUB_OUTPUT"
-            echo "Tag ${{ steps.version.outputs.tag }} already exists — nothing to do."
+          # The gate is the RELEASE, not the tag: a tag pushed by hand (or by
+          # gpush -t) without a release must still get its zip published.
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "release=exists" >> "$GITHUB_OUTPUT"
+            echo "Release $TAG already published — nothing to do."
           else
-            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "release=missing" >> "$GITHUB_OUTPUT"
+          fi
+          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            echo "tag=exists" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=missing" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Lint every PHP file
-        if: steps.check.outputs.exists == 'false'
+        if: steps.check.outputs.release == 'missing'
         run: |
-          find . -name '*.php' -not -path './.git/*' -print0 \
-            | xargs -0 -n1 php -l
+          find . -name '*.php' -not -path './.git/*' -print0 | xargs -0 -n1 php -l
 
       - name: Build the installable zip
-        if: steps.check.outputs.exists == 'false'
+        if: steps.check.outputs.release == 'missing'
         run: |
           BUILD="$RUNNER_TEMP/build/ofnoa-social-embed"
           mkdir -p "$BUILD"
@@ -64,7 +88,7 @@ jobs:
           ls -lh ofnoa-social-embed.zip
 
       - name: Tag the release
-        if: steps.check.outputs.exists == 'false'
+        if: steps.check.outputs.release == 'missing' && steps.check.outputs.tag == 'missing'
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -72,7 +96,7 @@ jobs:
           git push origin "${{ steps.version.outputs.tag }}"
 
       - name: Publish the GitHub release
-        if: steps.check.outputs.exists == 'false'
+        if: steps.check.outputs.release == 'missing'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.version.outputs.tag }}
