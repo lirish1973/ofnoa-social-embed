@@ -519,45 +519,58 @@
 			return maxScroll() > 2;
 		}
 
-		function perView() {
+		/*
+		 * Every scroll position the track can rest on, one per card, in order.
+		 * Each card's own scroll-snap-align decides where it rests (reels centre
+		 * their cards, the carousel aligns them to the start), and positions
+		 * past either end collapse into one, so every stop is a real move.
+		 */
+		function stops() {
 			var list = cards();
-			if ( list.length < 2 ) {
-				return 1;
-			}
-			var width = list[ 0 ].getBoundingClientRect().width;
-			var pitch = Math.abs( offsetOf( list[ 1 ] ) - offsetOf( list[ 0 ] ) ) || width;
-			// N cards fill the view as N widths plus N-1 gaps, so add one gap back.
-			var gap = Math.max( 0, pitch - width );
-			return Math.max( 1, Math.floor( ( track.clientWidth + gap + 2 ) / pitch ) );
+			var max = maxScroll();
+			var pos = position();
+			var view = track.clientWidth;
+			var out = [];
+			list.forEach( function ( card ) {
+				var start = offsetOf( card ) + pos;
+				var width = card.getBoundingClientRect().width;
+				var align = window.getComputedStyle( card ).scrollSnapAlign || '';
+				var at = start;
+				if ( align.indexOf( 'center' ) !== -1 ) {
+					at = start + width / 2 - view / 2;
+				} else if ( align.indexOf( 'end' ) !== -1 ) {
+					at = start + width - view;
+				}
+				at = Math.round( Math.max( 0, Math.min( at, max ) ) );
+				if ( ! out.length || at - out[ out.length - 1 ] > 2 ) {
+					out.push( at );
+				}
+			} );
+			return out.length ? out : [ 0 ];
 		}
 
 		function lastIndex() {
-			return Math.max( 0, cards().length - perView() );
+			return stops().length - 1;
 		}
 
 		function currentIndex() {
-			if ( position() >= maxScroll() - 2 ) {
-				return lastIndex();
-			}
+			var pos = position();
 			var best = 0;
 			var bestDistance = Infinity;
-			cards().forEach( function ( card, i ) {
-				var d = Math.abs( offsetOf( card ) );
+			stops().forEach( function ( at, i ) {
+				var d = Math.abs( at - pos );
 				if ( d < bestDistance ) {
 					bestDistance = d;
 					best = i;
 				}
 			} );
-			return Math.min( best, lastIndex() );
+			return best;
 		}
 
 		function goTo( index, smooth ) {
-			var list = cards();
-			if ( ! list.length ) {
-				return;
-			}
-			index = Math.max( 0, Math.min( index, lastIndex() ) );
-			var target = Math.min( position() + offsetOf( list[ index ] ), maxScroll() );
+			var list = stops();
+			index = Math.max( 0, Math.min( index, list.length - 1 ) );
+			var target = list[ index ];
 			track.scrollTo( {
 				left: isRtl() ? -target : target,
 				behavior: smooth && ! prefersReducedMotion() ? 'smooth' : 'auto'

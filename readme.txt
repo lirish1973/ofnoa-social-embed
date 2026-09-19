@@ -4,7 +4,7 @@ Tags: instagram, tiktok, facebook, reels, video
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.1.6
+Stable tag: 1.1.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,6 +52,9 @@ Set a featured image on the video — it always wins. Failing that, the card fal
 Yes. The layout uses logical properties throughout and arrows, play icons and the lightbox all mirror correctly.
 
 == Changelog ==
+
+= 1.1.7 =
+* Reels (and any layout whose cards snap to the centre) no longer get stuck: arrows, autoplay, dots and drag now move between the exact positions the cards snap to, so every video can be reached in both directions, LTR and RTL.
 
 = 1.1.6 =
 * Links pasted with nothing between them ("…068https://…") are now split into separate videos, so every video in the list shows.
