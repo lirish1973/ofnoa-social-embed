@@ -31,6 +31,45 @@ class OSE_Assets {
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'maybe_enqueue_early' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin' ) );
 		add_action( 'enqueue_block_editor_assets', array( __CLASS__, 'editor' ) );
+
+		// Optimisation plugins that hold JavaScript back until the first
+		// interaction swallow that first click on an arrow. Opt this small
+		// script out of delay/defer/combine in the common ones.
+		add_filter( 'script_loader_tag', array( __CLASS__, 'no_delay_attributes' ), 10, 2 );
+		add_filter( 'rocket_delay_js_exclusions', array( __CLASS__, 'exclude_from_optimizers' ) );
+		add_filter( 'rocket_exclude_defer_js', array( __CLASS__, 'exclude_from_optimizers' ) );
+		add_filter( 'rocket_exclude_js', array( __CLASS__, 'exclude_from_optimizers' ) );
+	}
+
+	/**
+	 * Mark our script so LiteSpeed, Autoptimize, Cloudflare Rocket Loader and
+	 * similar tools leave it alone.
+	 *
+	 * @param string $tag    Script tag.
+	 * @param string $handle Handle.
+	 * @return string
+	 */
+	public static function no_delay_attributes( $tag, $handle ) {
+		if ( 'ose-frontend' !== $handle || false !== strpos( $tag, 'data-no-optimize' ) ) {
+			return $tag;
+		}
+		return str_replace(
+			'<script ',
+			'<script data-no-optimize="1" data-no-defer="1" data-noptimize="1" data-cfasync="false" data-pagespeed-no-defer ',
+			$tag
+		);
+	}
+
+	/**
+	 * WP Rocket exclusion lists (delay JS, defer JS, combine JS).
+	 *
+	 * @param mixed $list Existing patterns.
+	 * @return array
+	 */
+	public static function exclude_from_optimizers( $list ) {
+		$list   = is_array( $list ) ? $list : array();
+		$list[] = 'ofnoa-social-embed/assets/js/ose-frontend.js';
+		return $list;
 	}
 
 	/**

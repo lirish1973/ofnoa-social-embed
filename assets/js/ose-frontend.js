@@ -328,6 +328,11 @@
 		if ( this.moreBtn && this.moreBtn.parentNode ) {
 			this.moreBtn.parentNode.hidden = this.limit >= matched.length;
 		}
+
+		if ( this.refreshCarousel ) {
+			this.track.scrollLeft = 0;
+			this.refreshCarousel();
+		}
 	};
 
 	Gallery.prototype.syncDarkMode = function () {
@@ -435,84 +440,173 @@
 		this.applyVisibility( animate !== false );
 	};
 
+	/**
+	 * Carousel / reels / stories.
+	 *
+	 * Navigation is index-based: every arrow click, dot and autoplay tick
+	 * computes the exact card to land on and scrolls to it. Positions are
+	 * measured from the start edge, so the same code serves LTR and RTL.
+	 * Arrows and dots only appear when there is actually something to scroll.
+	 */
 	Gallery.prototype.bindCarousel = function () {
 		var layout = this.config.layout;
 		if ( layout !== 'carousel' && layout !== 'reels' && layout !== 'stories' ) {
 			return;
 		}
 		var self = this;
+		var root = this.root;
 		var track = this.track;
-		var prev = qs( this.root, '.ose__arrow--prev' );
-		var next = qs( this.root, '.ose__arrow--next' );
-		var dotsWrap = qs( this.root, '.ose__dots' );
+		var prev = qs( root, '.ose__arrow--prev' );
+		var next = qs( root, '.ose__arrow--next' );
+		var dotsWrap = qs( root, '.ose__dots' );
+		var loop = !! this.config.loop;
 
-		function step() {
-			var card = self.cards[ 0 ];
-			if ( ! card ) {
-				return track.clientWidth;
+		function isRtl() {
+			return window.getComputedStyle( track ).direction === 'rtl';
+		}
+
+		function cards() {
+			return self.cards.filter( function ( c ) {
+				return ! c.classList.contains( 'is-hidden' );
+			} );
+		}
+
+		// Distance of a card's start edge from the track's start edge, in px.
+		function offsetOf( card ) {
+			var t = track.getBoundingClientRect();
+			var c = card.getBoundingClientRect();
+			return isRtl() ? t.right - c.right : c.left - t.left;
+		}
+
+		function position() {
+			return Math.abs( track.scrollLeft );
+		}
+
+		function maxScroll() {
+			return Math.max( 0, track.scrollWidth - track.clientWidth );
+		}
+
+		function overflows() {
+			return maxScroll() > 2;
+		}
+
+		function perView() {
+			var list = cards();
+			if ( list.length < 2 ) {
+				return 1;
 			}
-			var styles = window.getComputedStyle( track );
-			var gap = parseFloat( styles.columnGap || styles.gap || '0' ) || 0;
-			return card.getBoundingClientRect().width + gap;
+			var width = list[ 0 ].getBoundingClientRect().width;
+			var pitch = Math.abs( offsetOf( list[ 1 ] ) - offsetOf( list[ 0 ] ) ) || width;
+			// N cards fill the view as N widths plus N-1 gaps, so add one gap back.
+			var gap = Math.max( 0, pitch - width );
+			return Math.max( 1, Math.floor( ( track.clientWidth + gap + 2 ) / pitch ) );
 		}
 
-		function dir() {
-			return window.getComputedStyle( track ).direction === 'rtl' ? -1 : 1;
+		function lastIndex() {
+			return Math.max( 0, cards().length - perView() );
 		}
 
-		function slide( delta ) {
-			track.scrollBy( { left: step() * delta * dir(), behavior: prefersReducedMotion() ? 'auto' : 'smooth' } );
+		function currentIndex() {
+			if ( position() >= maxScroll() - 2 ) {
+				return lastIndex();
+			}
+			var best = 0;
+			var bestDistance = Infinity;
+			cards().forEach( function ( card, i ) {
+				var d = Math.abs( offsetOf( card ) );
+				if ( d < bestDistance ) {
+					bestDistance = d;
+					best = i;
+				}
+			} );
+			return Math.min( best, lastIndex() );
 		}
 
+		function goTo( index, smooth ) {
+			var list = cards();
+			if ( ! list.length ) {
+				return;
+			}
+			index = Math.max( 0, Math.min( index, lastIndex() ) );
+			var target = Math.min( position() + offsetOf( list[ index ] ), maxScroll() );
+			track.scrollTo( {
+				left: isRtl() ? -target : target,
+				behavior: smooth && ! prefersReducedMotion() ? 'smooth' : 'auto'
+			} );
+		}
+
+		function step( delta ) {
+			var index = currentIndex() + delta;
+			var last = lastIndex();
+			if ( index > last ) {
+				index = loop ? 0 : last;
+			} else if ( index < 0 ) {
+				index = loop ? last : 0;
+			}
+			goTo( index, true );
+		}
+
+		// ---------- Arrows ----------
 		if ( prev ) {
 			prev.addEventListener( 'click', function () {
-				slide( -1 );
+				step( -1 );
 			} );
 		}
 		if ( next ) {
 			next.addEventListener( 'click', function () {
-				if ( self.config.loop && atEnd() ) {
-					track.scrollTo( { left: 0, behavior: 'smooth' } );
-					return;
-				}
-				slide( 1 );
+				step( 1 );
 			} );
 		}
 
-		function atEnd() {
-			return Math.abs( track.scrollLeft ) + track.clientWidth >= track.scrollWidth - 4;
-		}
-
-		function updateArrows() {
-			if ( ! prev || ! next || self.config.loop ) {
-				return;
-			}
-			prev.disabled = Math.abs( track.scrollLeft ) < 4;
-			next.disabled = atEnd();
-		}
-
-		if ( dotsWrap ) {
-			this.cards.forEach( function ( card, i ) {
-				var dot = el( 'button', 'ose__dot' + ( i === 0 ? ' is-active' : '' ) );
-				dot.type = 'button';
-				dot.setAttribute( 'role', 'tab' );
-				dot.setAttribute( 'aria-label', String( i + 1 ) );
-				dot.addEventListener( 'click', function () {
-					track.scrollTo( { left: step() * i * dir(), behavior: 'smooth' } );
-				} );
-				dotsWrap.appendChild( dot );
-			} );
-		}
-
-		function updateDots() {
+		// ---------- Dots: one per reachable position, not one per card ----------
+		var dotCount = -1;
+		function buildDots() {
 			if ( ! dotsWrap ) {
 				return;
 			}
-			var active = Math.round( Math.abs( track.scrollLeft ) / step() );
-			qsa( dotsWrap, '.ose__dot' ).forEach( function ( dot, i ) {
-				dot.classList.toggle( 'is-active', i === active );
-			} );
+			var count = overflows() ? lastIndex() + 1 : 0;
+			if ( count === dotCount ) {
+				return;
+			}
+			dotCount = count;
+			dotsWrap.innerHTML = '';
+			for ( var i = 0; i < count; i++ ) {
+				( function ( n ) {
+					var dot = el( 'button', 'ose__dot' );
+					dot.type = 'button';
+					dot.setAttribute( 'role', 'tab' );
+					dot.setAttribute( 'aria-label', String( n + 1 ) );
+					dot.addEventListener( 'click', function () {
+						goTo( n, true );
+					} );
+					dotsWrap.appendChild( dot );
+				} )( i );
+			}
 		}
+
+		// ---------- UI state ----------
+		function refresh() {
+			var scrollable = overflows();
+			root.classList.toggle( 'ose--static', ! scrollable );
+			if ( prev ) {
+				prev.hidden = ! scrollable;
+				prev.disabled = scrollable && ! loop && position() < 2;
+			}
+			if ( next ) {
+				next.hidden = ! scrollable;
+				next.disabled = scrollable && ! loop && position() >= maxScroll() - 2;
+			}
+			buildDots();
+			if ( dotsWrap ) {
+				dotsWrap.hidden = ! scrollable;
+				var active = currentIndex();
+				qsa( dotsWrap, '.ose__dot' ).forEach( function ( dot, i ) {
+					dot.classList.toggle( 'is-active', i === active );
+					dot.setAttribute( 'aria-selected', i === active ? 'true' : 'false' );
+				} );
+			}
+		}
+		this.refreshCarousel = refresh;
 
 		var ticking = false;
 		track.addEventListener(
@@ -523,46 +617,127 @@
 				}
 				ticking = true;
 				window.requestAnimationFrame( function () {
-					updateArrows();
-					updateDots();
+					refresh();
 					ticking = false;
 				} );
 			},
 			{ passive: true }
 		);
 
-		updateArrows();
+		if ( 'ResizeObserver' in window ) {
+			new ResizeObserver( function () {
+				refresh();
+			} ).observe( track );
+		} else {
+			window.addEventListener( 'resize', refresh );
+		}
+		// Posters change card heights and widths as they arrive.
+		qsa( track, 'img' ).forEach( function ( img ) {
+			if ( ! img.complete ) {
+				img.addEventListener( 'load', refresh, { once: true } );
+			}
+		} );
+		window.addEventListener( 'load', refresh );
+		refresh();
 
+		// ---------- Keyboard ----------
+		track.setAttribute( 'tabindex', '0' );
+		track.addEventListener( 'keydown', function ( e ) {
+			if ( e.key !== 'ArrowLeft' && e.key !== 'ArrowRight' ) {
+				return;
+			}
+			if ( e.target !== track ) {
+				return;
+			}
+			e.preventDefault();
+			var forward = ( e.key === 'ArrowRight' ) !== isRtl();
+			step( forward ? 1 : -1 );
+		} );
+
+		// ---------- Mouse drag ----------
+		// Starts only after a real movement, captures the pointer so the release
+		// is never lost to an iframe, and swallows the click that ends a drag
+		// so dragging never opens the lightbox.
+		var drag = null;
+		var dragged = false;
+		track.addEventListener( 'pointerdown', function ( e ) {
+			if ( e.pointerType !== 'mouse' || e.button !== 0 ) {
+				return;
+			}
+			drag = { x: e.clientX, left: track.scrollLeft, id: e.pointerId };
+			dragged = false;
+		} );
+		track.addEventListener( 'pointermove', function ( e ) {
+			if ( ! drag ) {
+				return;
+			}
+			var dx = e.clientX - drag.x;
+			if ( ! dragged ) {
+				if ( Math.abs( dx ) < 6 ) {
+					return;
+				}
+				dragged = true;
+				track.classList.add( 'is-dragging' );
+				try {
+					track.setPointerCapture( drag.id );
+				} catch ( err ) {}
+			}
+			track.scrollLeft = drag.left - dx;
+		} );
+		function endDrag() {
+			if ( ! drag ) {
+				return;
+			}
+			var wasDragged = dragged;
+			drag = null;
+			track.classList.remove( 'is-dragging' );
+			if ( wasDragged ) {
+				goTo( currentIndex(), true );
+			}
+		}
+		track.addEventListener( 'pointerup', endDrag );
+		track.addEventListener( 'pointercancel', endDrag );
+		track.addEventListener( 'lostpointercapture', endDrag );
+		window.addEventListener( 'blur', endDrag );
+		track.addEventListener(
+			'click',
+			function ( e ) {
+				if ( dragged ) {
+					e.preventDefault();
+					e.stopPropagation();
+					dragged = false;
+				}
+			},
+			true
+		);
+
+		// ---------- Autoplay ----------
 		if ( this.config.autoplay && ! prefersReducedMotion() ) {
 			var timer = null;
 			var speed = Math.max( 1000, parseInt( this.config.speed, 10 ) || 4000 );
-
-			function start() {
-				stop();
-				timer = window.setInterval( function () {
-					if ( atEnd() ) {
-						if ( self.config.loop ) {
-							track.scrollTo( { left: 0, behavior: 'smooth' } );
-						} else {
-							stop();
-						}
-						return;
-					}
-					slide( 1 );
-				}, speed );
-			}
-
-			function stop() {
+			var stop = function () {
 				if ( timer ) {
 					window.clearInterval( timer );
 					timer = null;
 				}
-			}
-
-			this.root.addEventListener( 'mouseenter', stop );
-			this.root.addEventListener( 'mouseleave', start );
-			this.root.addEventListener( 'focusin', stop );
-			this.root.addEventListener( 'touchstart', stop, { passive: true } );
+			};
+			var start = function () {
+				stop();
+				timer = window.setInterval( function () {
+					if ( ! overflows() ) {
+						return;
+					}
+					if ( ! loop && currentIndex() >= lastIndex() ) {
+						stop();
+						return;
+					}
+					step( 1 );
+				}, speed );
+			};
+			root.addEventListener( 'mouseenter', stop );
+			root.addEventListener( 'mouseleave', start );
+			root.addEventListener( 'focusin', stop );
+			root.addEventListener( 'touchstart', stop, { passive: true } );
 			document.addEventListener( 'visibilitychange', function () {
 				if ( document.hidden ) {
 					stop();
@@ -572,28 +747,6 @@
 			} );
 			start();
 		}
-
-		// Drag to scroll on pointer devices.
-		var down = false;
-		var startX = 0;
-		var startScroll = 0;
-		track.addEventListener( 'pointerdown', function ( e ) {
-			if ( e.pointerType === 'touch' ) {
-				return;
-			}
-			down = true;
-			startX = e.clientX;
-			startScroll = track.scrollLeft;
-		} );
-		window.addEventListener( 'pointerup', function () {
-			down = false;
-		} );
-		track.addEventListener( 'pointermove', function ( e ) {
-			if ( ! down ) {
-				return;
-			}
-			track.scrollLeft = startScroll - ( e.clientX - startX );
-		} );
 	};
 
 	Gallery.prototype.bindLoadMore = function () {

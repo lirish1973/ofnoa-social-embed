@@ -4,7 +4,7 @@ Tags: instagram, tiktok, facebook, reels, video
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,6 +52,13 @@ Set a featured image on the video — it always wins. Failing that, the card fal
 Yes. The layout uses logical properties throughout and arrows, play icons and the lightbox all mirror correctly.
 
 == Changelog ==
+
+= 1.1.3 =
+* Carousel: arrows and dots are hidden when every video already fits on screen — previously they showed and did nothing.
+* Carousel: navigation rebuilt around card positions (exact landing on a card, LTR and RTL alike), dots now count reachable positions instead of cards, "previous" works from the last position.
+* Carousel: mouse drag starts only after a real movement, can no longer get stuck when the release lands on an embedded player, snaps to a card when released, and never opens the lightbox by accident.
+* Carousel: arrow keys move the slider when it has focus; sizes are re-measured on resize, on poster load and when a tab or "load more" changes the visible cards.
+* The front-end script is excluded from WP Rocket, LiteSpeed, Autoptimize and Cloudflare Rocket Loader delay/defer, which otherwise swallow the first click.
 
 = 1.1.2 =
 * Updates now appear without waiting for WordPress' 12-hour refresh: the update is injected every time WordPress reads its update list, not only when it rebuilds it.

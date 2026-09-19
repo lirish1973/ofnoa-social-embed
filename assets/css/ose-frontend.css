@@ -340,6 +340,34 @@
 	cursor: default;
 }
 
+/* The UA's [hidden] rule loses to display:grid above; restate it. */
+.ose__arrow[hidden],
+.ose__dots[hidden] {
+	display: none;
+}
+
+.ose--carousel .ose__track,
+.ose--reels .ose__track {
+	cursor: grab;
+}
+
+.ose__track:focus-visible {
+	outline: 2px solid var(--ose-accent);
+	outline-offset: 4px;
+}
+
+/* While dragging: no snapping fights the hand, no text selection, no hover flicker. */
+.ose__track.is-dragging {
+	cursor: grabbing;
+	scroll-snap-type: none;
+	scroll-behavior: auto;
+	user-select: none;
+}
+
+.ose__track.is-dragging .ose__card {
+	pointer-events: none;
+}
+
 .ose:dir(rtl) .ose__arrow--prev svg,
 .ose:dir(rtl) .ose__arrow--next svg {
 	transform: scaleX(-1);
